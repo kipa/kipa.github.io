@@ -177,33 +177,6 @@
             background: linear-gradient(90deg, #93c5fd 0%, #3b82f6 45%, #2563eb 100%);
         }
 
-        .pdf-export-mode body {
-            background: #f4f7ff !important;
-        }
-
-        .pdf-export-mode .liquid-background {
-            display: none !important;
-        }
-
-        .pdf-export-mode .resume {
-            background: #ffffff !important;
-            border: 1px solid #dbe3ef !important;
-            box-shadow: none !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-        }
-
-        .pdf-export-mode .resume::before {
-            display: none !important;
-        }
-
-        .pdf-export-mode .reveal,
-        .pdf-export-mode .resume.ready .reveal {
-            animation: none !important;
-            opacity: 1 !important;
-            transform: none !important;
-        }
-
         .reveal {
             opacity: 1;
         }
@@ -284,6 +257,39 @@
             min-width: 0;
         }
 
+        .profile-photo-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            cursor: zoom-in;
+            background: rgba(226, 232, 240, 0.9);
+            box-shadow: 0 8px 20px rgba(30, 64, 175, 0.16);
+        }
+
+        .profile-photo-button.photo-hidden {
+            display: none;
+        }
+
+        .profile-photo-skeleton {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #e5e7eb 20%, #dbeafe 50%, #e5e7eb 80%);
+            background-size: 220% 100%;
+            animation: shimmer 1.2s linear infinite;
+            z-index: 1;
+        }
+
+        .profile-photo-skeleton.hidden {
+            display: none;
+        }
+
         .profile-photo {
             width: 60px;
             height: 60px;
@@ -292,17 +298,18 @@
             object-position: center;
             flex-shrink: 0;
             border: 2px solid rgba(255, 255, 255, 0.86);
-            box-shadow: 0 8px 20px rgba(30, 64, 175, 0.16);
             background: rgba(226, 232, 240, 0.9);
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
-        .profile-photo.skeleton {
-            border: 0;
-            box-shadow: none;
+        .profile-photo.is-visible {
+            opacity: 1;
         }
 
-        .profile-photo.photo-hidden {
-            display: none;
+        .profile-photo-button:focus-visible {
+            outline: 2px solid rgba(37, 99, 235, 0.8);
+            outline-offset: 3px;
         }
 
         .actions {
@@ -314,9 +321,12 @@
 
         h1 {
             margin: 0;
-            font-size: 2rem;
+            font-size: 1.72rem;
             line-height: 1.1;
             letter-spacing: -0.02em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .role {
@@ -351,6 +361,14 @@
             cursor: progress;
             transform: none;
             box-shadow: none;
+        }
+
+        .icon-link {
+            text-decoration: none;
+        }
+
+        .icon-link.hidden-link {
+            display: none;
         }
 
         .lang-btn {
@@ -514,6 +532,70 @@
             padding: 10px 12px;
         }
 
+        .photo-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .photo-modal[hidden] {
+            display: none;
+        }
+
+        .photo-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.74);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .photo-modal-content {
+            position: relative;
+            z-index: 1;
+            max-width: min(86vw, 520px);
+            max-height: min(82vh, 520px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 55px rgba(15, 23, 42, 0.36);
+            background: #fff;
+        }
+
+        .photo-modal-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 2;
+            border: 1px solid rgba(191, 219, 254, 0.85);
+            background: rgba(239, 246, 255, 0.95);
+            color: #1d4ed8;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .skeleton,
             .resume.ready .reveal,
@@ -536,6 +618,7 @@
                 border-radius: 14px;
             }
 
+            .profile-photo-button,
             .profile-photo {
                 width: 52px;
                 height: 52px;
@@ -559,7 +642,7 @@
             }
 
             h1 {
-                font-size: 1.7rem;
+                font-size: 1.45rem;
             }
 
             .header {
@@ -579,18 +662,26 @@
         <article class="resume loading" id="resumeRoot">
             <header class="header reveal">
                 <div class="identity">
-                    <img
-                        id="profilePhoto"
-                        class="profile-photo skeleton"
-                        src="data:image/gif;base64,R0lGODlhAQABAAAAACw="
-                        alt="Фото профиля"
-                    >
+                    <button id="profilePhotoButton" class="profile-photo-button" type="button" aria-label="Открыть фото профиля">
+                        <span id="profilePhotoSkeleton" class="profile-photo-skeleton"></span>
+                        <img
+                            id="profilePhoto"
+                            class="profile-photo"
+                            src="data:image/gif;base64,R0lGODlhAQABAAAAACw="
+                            alt="Фото профиля"
+                        >
+                    </button>
                     <div class="identity-text">
                         <h1 id="name" class="skeleton skeleton-title"></h1>
                         <p class="role skeleton skeleton-line short" id="title"></p>
                     </div>
                 </div>
                 <div class="actions">
+                    <a id="telegramLink" class="icon-btn icon-link hidden-link" href="#" title="Telegram" aria-label="Открыть Telegram" target="_blank" rel="noopener noreferrer" data-no-translate>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M21.2 4.8L18.3 19.1C18.1 20.1 17.5 20.3 16.7 19.9L11.9 16.4L9.6 18.6C9.4 18.8 9.2 19 8.8 19L9.1 14.1L17.9 6.2C18.3 5.9 17.8 5.7 17.3 6L6.5 12.8L1.8 11.3C0.8 11 0.8 10.3 2 9.8L20.5 3C21.3 2.7 22 3.2 21.7 4.3L21.2 4.8Z" fill="currentColor"></path>
+                        </svg>
+                    </a>
                     <button id="toggleLanguage" class="icon-btn lang-btn" type="button" title="Switch to English" aria-label="Переключить язык на английский" data-no-translate>
                         EN
                     </button>
@@ -660,6 +751,14 @@
         </article>
     </main>
 
+    <div id="photoModal" class="photo-modal" hidden data-no-translate>
+        <div class="photo-modal-backdrop" data-close-photo></div>
+        <button id="photoModalClose" class="photo-modal-close" type="button" aria-label="Закрыть фото">✕</button>
+        <figure class="photo-modal-content">
+            <img id="photoModalImage" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="Фото профиля">
+        </figure>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         let loadedResume = null;
@@ -667,6 +766,7 @@
         let isTranslating = false;
         let baseTitle = "QA Engineer Resume";
         const DEFAULT_PROFILE_PHOTO = "./profile-photo.jpg";
+        let currentPhotoSource = "";
         const originalTextByNode = new Map();
         const translatedCache = new Map();
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -752,16 +852,24 @@
         }
 
         function setProfilePhoto(profile) {
+            const photoButton = document.getElementById("profilePhotoButton");
             const photo = document.getElementById("profilePhoto");
+            const photoSkeleton = document.getElementById("profilePhotoSkeleton");
             const preferredSource = profile?.photo || DEFAULT_PROFILE_PHOTO;
             let fallbackTried = false;
 
-            photo.classList.remove("photo-hidden");
-            photo.classList.add("skeleton");
+            photoButton.classList.remove("photo-hidden");
+            photoSkeleton.classList.remove("hidden");
+            photo.classList.remove("is-visible");
+            photoButton.disabled = true;
             photo.alt = `Фото ${profile?.name || "кандидата"}`;
+            currentPhotoSource = "";
 
             photo.onload = () => {
-                photo.classList.remove("skeleton");
+                currentPhotoSource = photo.currentSrc || photo.src;
+                photo.classList.add("is-visible");
+                photoSkeleton.classList.add("hidden");
+                photoButton.disabled = false;
             };
 
             photo.onerror = () => {
@@ -771,11 +879,31 @@
                     return;
                 }
 
-                photo.classList.remove("skeleton");
-                photo.classList.add("photo-hidden");
+                photoSkeleton.classList.add("hidden");
+                photo.classList.remove("is-visible");
+                photoButton.classList.add("photo-hidden");
+                photoButton.disabled = true;
             };
 
             photo.src = preferredSource;
+        }
+
+        function setTelegramLink(profile, contacts) {
+            const telegramLink = document.getElementById("telegramLink");
+            const directProfileLink = profile?.telegram;
+            const contactLink = (contacts || []).find((contact) => {
+                return typeof contact?.href === "string" && contact.href.includes("t.me/");
+            })?.href;
+            const target = directProfileLink || contactLink;
+
+            if (!target) {
+                telegramLink.classList.add("hidden-link");
+                telegramLink.removeAttribute("href");
+                return;
+            }
+
+            telegramLink.href = target;
+            telegramLink.classList.remove("hidden-link");
         }
 
         function queueBackgroundParallaxFrame() {
@@ -1007,6 +1135,7 @@
             baseTitle = data.meta?.pageTitle || "QA Engineer Resume";
             document.title = baseTitle;
             setProfilePhoto(data.profile || {});
+            setTelegramLink(data.profile || {}, data.contacts || []);
             document.getElementById("name").textContent = data.profile.name;
             document.getElementById("title").textContent = data.profile.title;
             document.getElementById("summary").textContent = data.summary;
@@ -1030,46 +1159,221 @@
             finishLoadingState();
         }
 
-        async function downloadResumePdf() {
-            if (!loadedResume) {
+        function openPhotoModal() {
+            if (!currentPhotoSource) {
                 return;
             }
 
-            const resumeRoot = document.querySelector(".resume");
+            const modal = document.getElementById("photoModal");
+            const modalImage = document.getElementById("photoModalImage");
+            const profilePhoto = document.getElementById("profilePhoto");
+            modalImage.src = currentPhotoSource;
+            modalImage.alt = profilePhoto.alt || "Фото профиля";
+            modal.hidden = false;
+            document.body.classList.add("modal-open");
+        }
+
+        function closePhotoModal() {
+            const modal = document.getElementById("photoModal");
+            if (modal.hidden) {
+                return;
+            }
+            modal.hidden = true;
+            document.body.classList.remove("modal-open");
+        }
+
+        function createPdfSectionTitle(text) {
+            const title = document.createElement("h2");
+            title.textContent = text;
+            title.style.margin = "18px 0 8px";
+            title.style.fontSize = "15px";
+            title.style.fontWeight = "700";
+            return title;
+        }
+
+        function appendPdfBulletList(container, items) {
+            const list = document.createElement("ul");
+            list.style.margin = "0";
+            list.style.padding = "0 0 0 18px";
+            list.style.fontSize = "13px";
+            list.style.lineHeight = "1.45";
+            items.forEach((text) => {
+                const item = document.createElement("li");
+                item.textContent = text;
+                item.style.marginBottom = "4px";
+                list.appendChild(item);
+            });
+            container.appendChild(list);
+        }
+
+        function appendPdfTimeline(container, items) {
+            items.forEach((item) => {
+                const block = document.createElement("div");
+                block.style.marginBottom = "10px";
+
+                const heading = document.createElement("p");
+                heading.textContent = item.heading || "";
+                heading.style.margin = "0";
+                heading.style.fontSize = "13px";
+                heading.style.fontWeight = "700";
+                block.appendChild(heading);
+
+                const meta = document.createElement("p");
+                meta.textContent = item.meta || "";
+                meta.style.margin = "2px 0 4px";
+                meta.style.fontSize = "12px";
+                block.appendChild(meta);
+
+                if (item.description) {
+                    const description = document.createElement("p");
+                    description.textContent = item.description;
+                    description.style.margin = "0";
+                    description.style.fontSize = "13px";
+                    description.style.lineHeight = "1.45";
+                    block.appendChild(description);
+                }
+
+                container.appendChild(block);
+            });
+        }
+
+        function createPdfContentElement(data) {
+            const root = document.createElement("article");
+            root.style.width = "760px";
+            root.style.padding = "26px 30px";
+            root.style.background = "#ffffff";
+            root.style.color = "#111827";
+            root.style.fontFamily = "Arial, sans-serif";
+
+            const header = document.createElement("div");
+            header.style.display = "flex";
+            header.style.alignItems = "center";
+            header.style.gap = "14px";
+            header.style.marginBottom = "10px";
+
+            if (currentPhotoSource) {
+                const photo = document.createElement("img");
+                photo.src = currentPhotoSource;
+                photo.alt = data.profile?.name || "Profile photo";
+                photo.style.width = "62px";
+                photo.style.height = "62px";
+                photo.style.borderRadius = "50%";
+                photo.style.objectFit = "cover";
+                header.appendChild(photo);
+            }
+
+            const headingWrap = document.createElement("div");
+            const name = document.createElement("h1");
+            name.textContent = data.profile?.name || "";
+            name.style.margin = "0";
+            name.style.fontSize = "26px";
+            name.style.lineHeight = "1.1";
+            headingWrap.appendChild(name);
+
+            const role = document.createElement("p");
+            role.textContent = data.profile?.title || "";
+            role.style.margin = "5px 0 0";
+            role.style.fontSize = "14px";
+            headingWrap.appendChild(role);
+            header.appendChild(headingWrap);
+            root.appendChild(header);
+
+            const contacts = document.createElement("p");
+            contacts.textContent = (data.contacts || []).map((contact) => contact.label).filter(Boolean).join(" | ");
+            contacts.style.margin = "0 0 8px";
+            contacts.style.fontSize = "12px";
+            root.appendChild(contacts);
+
+            root.appendChild(createPdfSectionTitle("О себе"));
+            const summary = document.createElement("p");
+            summary.textContent = data.summary || "";
+            summary.style.margin = "0";
+            summary.style.fontSize = "13px";
+            summary.style.lineHeight = "1.5";
+            root.appendChild(summary);
+
+            root.appendChild(createPdfSectionTitle("Ключевые навыки"));
+            appendPdfBulletList(root, data.skills || []);
+
+            root.appendChild(createPdfSectionTitle("Опыт работы"));
+            appendPdfTimeline(root, (data.experience || []).map((item) => ({
+                heading: item.position || "",
+                meta: [item.company, item.period].filter(Boolean).join(" — "),
+                description: item.description || ""
+            })));
+
+            root.appendChild(createPdfSectionTitle("Образование"));
+            appendPdfTimeline(root, (data.education || []).map((item) => ({
+                heading: item.program || "",
+                meta: [item.school, item.period].filter(Boolean).join(" — "),
+                description: item.description || ""
+            })));
+
+            root.appendChild(createPdfSectionTitle("Сертификаты"));
+            appendPdfTimeline(root, (data.certifications || []).map((item) => ({
+                heading: item.name || "",
+                meta: [item.issuer, item.period].filter(Boolean).join(" — "),
+                description: ""
+            })));
+
+            return root;
+        }
+
+        function waitForImages(element) {
+            const images = [...element.querySelectorAll("img")];
+            return Promise.all(images.map((image) => {
+                if (image.complete) {
+                    return Promise.resolve();
+                }
+                return new Promise((resolve) => {
+                    image.onload = () => resolve();
+                    image.onerror = () => resolve();
+                });
+            }));
+        }
+
+        async function downloadResumePdf() {
+            if (!loadedResume || typeof html2pdf !== "function") {
+                return;
+            }
+
             const button = document.getElementById("downloadPdf");
             const originalTitle = button.title;
             button.title = "Генерация PDF...";
             button.disabled = true;
 
-            const options = {
-                margin: [12, 12, 12, 12],
-                filename: "cv-qa-kirill-pavlov.pdf",
-                image: { type: "jpeg", quality: 0.98 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: "#f4f7ff",
-                    onclone: (clonedDocument) => {
-                        clonedDocument.documentElement.classList.add("pdf-export-mode");
-                        const clonedResume = clonedDocument.getElementById("resumeRoot");
-                        if (clonedResume) {
-                            clonedResume.classList.remove("loading", "ready");
-                        }
-                        const clonedActions = clonedDocument.querySelector(".actions");
-                        if (clonedActions) {
-                            clonedActions.style.display = "none";
-                        }
-                    }
-                },
-                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-                pagebreak: { mode: ["css", "legacy"] }
-            };
+            const exportHost = document.createElement("div");
+            exportHost.style.position = "fixed";
+            exportHost.style.left = "-100000px";
+            exportHost.style.top = "0";
+            exportHost.style.width = "820px";
+            exportHost.style.pointerEvents = "none";
+            exportHost.style.background = "#ffffff";
 
             try {
-                await html2pdf().set(options).from(resumeRoot).save();
+                const pdfContent = createPdfContentElement(loadedResume);
+                exportHost.appendChild(pdfContent);
+                document.body.appendChild(exportHost);
+                await waitForImages(exportHost);
+
+                const options = {
+                    margin: [10, 10, 10, 10],
+                    filename: "cv-qa-kirill-pavlov.pdf",
+                    image: { type: "jpeg", quality: 0.98 },
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: "#ffffff"
+                    },
+                    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+                    pagebreak: { mode: ["css", "legacy"] }
+                };
+
+                await html2pdf().set(options).from(exportHost).save();
             } catch (error) {
                 console.error("Cannot generate PDF", error);
             } finally {
+                exportHost.remove();
                 button.title = originalTitle;
                 button.disabled = false;
             }
@@ -1085,6 +1389,14 @@
         document.getElementById("toggleLanguage").addEventListener("click", () => {
             const next = currentLanguage === "ru" ? "en" : "ru";
             setLanguage(next);
+        });
+        document.getElementById("profilePhotoButton").addEventListener("click", openPhotoModal);
+        document.getElementById("photoModalClose").addEventListener("click", closePhotoModal);
+        document.querySelector("[data-close-photo]").addEventListener("click", closePhotoModal);
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                closePhotoModal();
+            }
         });
         initBackgroundParallax();
 
