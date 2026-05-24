@@ -1,21 +1,16 @@
 {
   "meta": {
-    "pageTitle": "Резюме QA Engineer"
+    "pageTitle": "Кирилл Павлов - QA Engineer"
   },
   "profile": {
     "name": "Кирилл Павлов",
     "title": "Senior QA Engineer",
     "photo": "./profile-photo.jpg",
-    "telegram": "https://t.me/kirill_qa"
+    "telegram": "https://kipavlo.t.me/"
   },
   "summary": "QA-инженер с опытом ручного и автоматизированного тестирования веб-продуктов. Специализируюсь на построении прозрачных процессов качества, снижении числа регрессий и ускорении релизов через автоматизацию критичных сценариев.",
   "contacts": [
-    { "label": "Москва, Россия" },
-    { "label": "kirill.qa@example.com", "href": "mailto:kirill.qa@example.com" },
-    { "label": "+7 (900) 000-00-00", "href": "tel:+79000000000" },
-    { "label": "t.me/kirill_qa", "href": "https://t.me/kirill_qa" },
-    { "label": "github.com/kirill-qa", "href": "https://github.com/kirill-qa" },
-    { "label": "linkedin.com/in/kirill-qa", "href": "https://linkedin.com/in/kirill-qa" }
+    { "label": "https://kipavlo.t.me/", "href": "https://kipavlo.t.me/" }
   ],
   "skills": [
     "Тест-дизайн: эквивалентные классы, граничные значения, pairwise",
