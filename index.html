@@ -1304,36 +1304,31 @@
 
                 const resumeRoot = document.getElementById("resumeRoot");
                 const options = {
-                    margin: [10, 10, 10, 10],
+                    margin: [12, 12, 12, 12],
                     filename: "cv-qa-kirill-pavlov.pdf",
                     image: { type: "jpeg", quality: 0.98 },
                     html2canvas: {
                         scale: 2,
                         useCORS: true,
                         backgroundColor: "#f3f7ff",
+                        ignoreElements: (element) => {
+                            return Boolean(
+                                element.closest(".actions-wrap") ||
+                                element.closest("#photoModal")
+                            );
+                        },
                         onclone: (clonedDocument) => {
                             const clonedResume = clonedDocument.getElementById("resumeRoot");
                             if (clonedResume) {
-                                clonedResume.classList.remove("loading");
-                                clonedResume.classList.remove("ready");
+                                clonedResume.classList.remove("loading", "ready");
                             }
 
-                            const clonedActions = clonedDocument.querySelector("#actionsPanel");
-                            if (clonedActions) {
-                                clonedActions.classList.remove("open");
-                            }
-
-                            const clonedActionsWrap = clonedDocument.querySelector(".actions-wrap");
-                            if (clonedActionsWrap) {
-                                clonedActionsWrap.style.display = "none";
-                            }
-
-                            clonedDocument.body.classList.remove("modal-open");
-
-                            const clonedModal = clonedDocument.getElementById("photoModal");
-                            if (clonedModal) {
-                                clonedModal.remove();
-                            }
+                            const revealElements = clonedDocument.querySelectorAll(".reveal");
+                            revealElements.forEach((element) => {
+                                element.style.animation = "none";
+                                element.style.opacity = "1";
+                                element.style.transform = "none";
+                            });
                         }
                     },
                     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
