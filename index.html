@@ -821,7 +821,8 @@
         </figure>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         let loadedResume = null;
         let currentLanguage = "ru";
@@ -1289,7 +1290,8 @@
         }
 
         async function downloadResumePdf() {
-            if (!loadedResume || typeof html2pdf !== "function") {
+            const jsPdfCtor = window.jspdf?.jsPDF;
+            if (!loadedResume || typeof html2canvas !== "function" || typeof jsPdfCtor !== "function") {
                 return;
             }
 
@@ -1298,52 +1300,90 @@
             button.title = "Генерация PDF...";
             button.disabled = true;
 
+            const resumeRoot = document.getElementById("resumeRoot");
+            const actionsWrap = resumeRoot.querySelector(".actions-wrap");
+            const previousActionsDisplay = actionsWrap ? actionsWrap.style.display : "";
+
             try {
                 setActionsMenuOpen(false);
                 closePhotoModal();
 
-                const resumeRoot = document.getElementById("resumeRoot");
-                const options = {
-                    margin: [10, 10, 10, 10],
-                    filename: "cv-qa-kirill-pavlov.pdf",
-                    image: { type: "jpeg", quality: 0.98 },
-                    html2canvas: {
-                        scale: 2,
-                        useCORS: true,
-                        backgroundColor: "#f3f7ff",
-                        onclone: (clonedDocument) => {
-                            const clonedResume = clonedDocument.getElementById("resumeRoot");
-                            if (clonedResume) {
-                                clonedResume.classList.remove("loading");
-                                clonedResume.classList.remove("ready");
-                            }
+                if (actionsWrap) {
+                    actionsWrap.style.display = "none";
+                }
 
-                            const clonedActions = clonedDocument.querySelector("#actionsPanel");
-                            if (clonedActions) {
-                                clonedActions.classList.remove("open");
-                            }
+                await new Promise((resolve) => requestAnimationFrame(resolve));
 
-                            const clonedActionsWrap = clonedDocument.querySelector(".actions-wrap");
-                            if (clonedActionsWrap) {
-                                clonedActionsWrap.style.display = "none";
-                            }
+                const canvas = await html2canvas(resumeRoot, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: "#f3f7ff",
+                    logging: false,
+                    scrollX: 0,
+                    scrollY: -window.scrollY
+                });
 
-                            clonedDocument.body.classList.remove("modal-open");
+                const pdf = new jsPdfCtor({ orientation: "portrait", unit: "mm", format: "a4" });
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const margin = 8;
+                const printableWidth = pageWidth - margin * 2;
+                const printableHeight = pageHeight - margin * 2;
+                const pxPerMm = canvas.width / printableWidth;
+                const pageHeightPx = Math.floor(printableHeight * pxPerMm);
 
-                            const clonedModal = clonedDocument.getElementById("photoModal");
-                            if (clonedModal) {
-                                clonedModal.remove();
-                            }
-                        }
-                    },
-                    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-                    pagebreak: { mode: ["css", "legacy"] }
-                };
+                let renderedHeight = 0;
+                let pageIndex = 0;
+                while (renderedHeight < canvas.height) {
+                    const sliceCanvas = document.createElement("canvas");
+                    sliceCanvas.width = canvas.width;
+                    sliceCanvas.height = Math.min(pageHeightPx, canvas.height - renderedHeight);
 
-                await html2pdf().set(options).from(resumeRoot).save();
+                    const ctx = sliceCanvas.getContext("2d");
+                    if (!ctx) {
+                        throw new Error("Cannot create canvas context");
+                    }
+
+                    ctx.drawImage(
+                        canvas,
+                        0,
+                        renderedHeight,
+                        canvas.width,
+                        sliceCanvas.height,
+                        0,
+                        0,
+                        canvas.width,
+                        sliceCanvas.height
+                    );
+
+                    const imageData = sliceCanvas.toDataURL("image/jpeg", 0.98);
+                    const renderedSliceHeightMm = sliceCanvas.height / pxPerMm;
+
+                    if (pageIndex > 0) {
+                        pdf.addPage();
+                    }
+                    pdf.addImage(
+                        imageData,
+                        "JPEG",
+                        margin,
+                        margin,
+                        printableWidth,
+                        renderedSliceHeightMm,
+                        undefined,
+                        "FAST"
+                    );
+
+                    renderedHeight += sliceCanvas.height;
+                    pageIndex += 1;
+                }
+
+                pdf.save("cv-qa-kirill-pavlov.pdf");
             } catch (error) {
                 console.error("Cannot generate PDF", error);
             } finally {
+                if (actionsWrap) {
+                    actionsWrap.style.display = previousActionsDisplay;
+                }
                 button.title = originalTitle;
                 button.disabled = false;
             }
