@@ -20,6 +20,9 @@
     <meta name="twitter:title" content="Кирилл Павлов — Senior QA Engineer">
     <meta name="twitter:description" content="Резюме QA Engineer: опыт, навыки, сертификаты и контакты.">
     <meta name="twitter:image" content="https://kipa.github.io/profile-photo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=PT+Mono&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="./favicon.svg">
     <style>
         :root {
@@ -32,6 +35,7 @@
             --accent: #2563eb;
             --accent-soft: #dbeafe;
             --action-size: 38px;
+            --mono: "PT Mono", "IBM Plex Mono", "Roboto Mono", "Courier New", Courier, monospace;
         }
 
         * {
@@ -40,7 +44,7 @@
 
         body {
             margin: 0;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: var(--mono);
             color: var(--text);
             background: linear-gradient(155deg, #edf3ff 0%, #f8fbff 44%, #edf3ff 100%);
             line-height: 1.5;
@@ -143,7 +147,7 @@
         .resume {
             background: linear-gradient(155deg, rgba(255, 255, 255, 0.55) 0%, rgba(248, 252, 255, 0.45) 100%);
             border: 1px solid rgba(255, 255, 255, 0.76);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 30px;
             box-shadow:
                 0 24px 55px rgba(15, 23, 42, 0.11),
@@ -351,9 +355,9 @@
 
         h1 {
             margin: 0;
-            font-size: 1.72rem;
+            font-size: 1.58rem;
             line-height: 1.1;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -362,7 +366,7 @@
         .role {
             margin: 6px 0 0;
             color: var(--muted);
-            font-size: 1.05rem;
+            font-size: 0.92rem;
         }
 
         .icon-btn {
@@ -424,7 +428,7 @@
         .contacts li {
             border: 1px solid var(--line);
             background: #f8fafc;
-            border-radius: 999px;
+            border-radius: 6px;
             padding: 4px 10px;
         }
 
@@ -447,9 +451,9 @@
 
         h2 {
             margin: 0 0 12px;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             text-transform: uppercase;
-            letter-spacing: 0.14em;
+            letter-spacing: 0.1em;
             color: #64748b;
             display: inline-flex;
             align-items: center;
@@ -457,11 +461,11 @@
         }
 
         h2::before {
-            content: "";
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #60a5fa, #2563eb);
+            content: "//";
+            color: #2563eb;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0;
         }
 
         p {
@@ -486,22 +490,22 @@
         }
 
         .timeline li {
-            border-left: 2px solid #dbeafe;
-            padding-left: 14px;
+            border-left: 1px solid #93c5fd;
+            padding-left: 16px;
             position: relative;
         }
 
         .timeline li::before {
             content: "";
             position: absolute;
-            left: -6px;
-            top: 2px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #60a5fa;
-            border: 2px solid #ffffff;
-            box-shadow: 0 0 0 1px #bfdbfe;
+            left: -5px;
+            top: 5px;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            box-shadow: none;
         }
 
         .timeline h3 {
