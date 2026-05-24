@@ -7,11 +7,13 @@
     <style>
         :root {
             color-scheme: light;
-            --text: #111827;
-            --muted: #4b5563;
-            --line: #e5e7eb;
-            --bg: #f9fafb;
+            --text: #0f172a;
+            --muted: #475569;
+            --line: #dbe3ef;
+            --bg: #f3f7ff;
             --card: #ffffff;
+            --accent: #2563eb;
+            --accent-soft: #dbeafe;
         }
 
         * {
@@ -22,27 +24,49 @@
             margin: 0;
             font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             color: var(--text);
-            background: var(--bg);
+            background:
+                radial-gradient(700px 350px at 100% -10%, #dbeafe 0%, rgba(219, 234, 254, 0) 70%),
+                radial-gradient(600px 320px at -10% 0%, #e0e7ff 0%, rgba(224, 231, 255, 0) 72%),
+                var(--bg);
             line-height: 1.5;
         }
 
         .container {
             max-width: 760px;
-            margin: 48px auto;
+            margin: 40px auto;
             padding: 0 20px;
         }
 
         .resume {
             background: var(--card);
             border: 1px solid var(--line);
-            border-radius: 12px;
+            border-radius: 18px;
             padding: 28px;
+            box-shadow: 0 16px 45px rgba(15, 23, 42, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resume::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            height: 4px;
+            background: linear-gradient(90deg, #93c5fd 0%, #3b82f6 45%, #2563eb 100%);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
         }
 
         h1 {
             margin: 0;
             font-size: 2rem;
             line-height: 1.1;
+            letter-spacing: -0.02em;
         }
 
         .role {
@@ -51,18 +75,54 @@
             font-size: 1.05rem;
         }
 
+        .download-btn {
+            border: 1px solid #bfdbfe;
+            background: #eff6ff;
+            color: #1d4ed8;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-1px);
+            background: #dbeafe;
+            box-shadow: 0 8px 22px rgba(37, 99, 235, 0.2);
+        }
+
+        .download-btn:disabled {
+            opacity: 0.65;
+            cursor: progress;
+            transform: none;
+            box-shadow: none;
+        }
+
         .contacts {
             margin: 18px 0 0;
             padding: 0;
             list-style: none;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px 18px;
+            gap: 8px;
             color: var(--muted);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
         }
 
-        .contacts a {
+        .contacts li {
+            border: 1px solid var(--line);
+            background: #f8fafc;
+            border-radius: 999px;
+            padding: 4px 10px;
+        }
+
+        .contacts a,
+        .contacts span {
             color: inherit;
             text-decoration: none;
             border-bottom: 1px solid transparent;
@@ -73,17 +133,28 @@
         }
 
         section {
-            border-top: 1px solid var(--line);
+            border-top: 1px solid #e2e8f0;
             margin-top: 22px;
             padding-top: 22px;
         }
 
         h2 {
             margin: 0 0 12px;
-            font-size: 0.95rem;
+            font-size: 0.82rem;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--muted);
+            letter-spacing: 0.14em;
+            color: #64748b;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #60a5fa, #2563eb);
         }
 
         p {
@@ -105,6 +176,25 @@
             list-style: none;
             display: grid;
             gap: 16px;
+        }
+
+        .timeline li {
+            border-left: 2px solid #dbeafe;
+            padding-left: 14px;
+            position: relative;
+        }
+
+        .timeline li::before {
+            content: "";
+            position: absolute;
+            left: -6px;
+            top: 2px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #60a5fa;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 0 1px #bfdbfe;
         }
 
         .timeline h3 {
@@ -130,16 +220,39 @@
             border-radius: 8px;
             padding: 10px 12px;
         }
+
+        @media (max-width: 640px) {
+            .resume {
+                padding: 22px;
+                border-radius: 14px;
+            }
+
+            h1 {
+                font-size: 1.7rem;
+            }
+
+            .header {
+                gap: 10px;
+            }
+        }
     </style>
 </head>
 <body>
     <main class="container">
         <article class="resume">
-            <header>
-                <h1 id="name"></h1>
-                <p class="role" id="title"></p>
-                <ul class="contacts" id="contacts"></ul>
+            <header class="header">
+                <div>
+                    <h1 id="name"></h1>
+                    <p class="role" id="title"></p>
+                </div>
+                <button id="downloadPdf" class="download-btn" type="button" title="Скачать PDF" aria-label="Скачать резюме в PDF">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 3V14M12 14L7.5 9.5M12 14L16.5 9.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M5 16.5V18.2C5 19.1941 5.80589 20 6.8 20H17.2C18.1941 20 19 19.1941 19 18.2V16.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>
+                    </svg>
+                </button>
             </header>
+            <ul class="contacts" id="contacts"></ul>
 
             <section>
                 <h2>О себе</h2>
@@ -168,7 +281,10 @@
         </article>
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
+        let loadedResume = null;
+
         function createTimelineItem(item) {
             const li = document.createElement("li");
 
@@ -207,7 +323,9 @@
                     link.rel = "noopener noreferrer";
                     item.appendChild(link);
                 } else {
-                    item.textContent = contact.label;
+                    const text = document.createElement("span");
+                    text.textContent = contact.label;
+                    item.appendChild(text);
                 }
                 contactsList.appendChild(item);
             });
@@ -228,6 +346,7 @@
         }
 
         function renderResume(data) {
+            loadedResume = data;
             document.title = data.meta?.pageTitle || "QA Engineer Resume";
             document.getElementById("name").textContent = data.profile.name;
             document.getElementById("title").textContent = data.profile.title;
@@ -248,10 +367,57 @@
             renderList("certifications", data.certifications || []);
         }
 
+        function getPdfFilename() {
+            const rawName = loadedResume?.profile?.name || "qa-resume";
+            const normalized = rawName
+                .trim()
+                .toLowerCase()
+                .replace(/\s+/g, "-")
+                .replace(/[^a-z0-9-]/g, "");
+
+            return `${normalized || "qa-resume"}.pdf`;
+        }
+
+        async function downloadResumePdf() {
+            if (!loadedResume) {
+                return;
+            }
+
+            const resumeRoot = document.querySelector(".resume");
+            const button = document.getElementById("downloadPdf");
+            const originalTitle = button.title;
+            button.title = "Генерация PDF...";
+            button.disabled = true;
+
+            const options = {
+                margin: [12, 12, 12, 12],
+                filename: getPdfFilename(),
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    ignoreElements: (element) => element.id === "downloadPdf"
+                },
+                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+                pagebreak: { mode: ["css", "legacy"] }
+            };
+
+            try {
+                await html2pdf().set(options).from(resumeRoot).save();
+            } catch (error) {
+                console.error("Cannot generate PDF", error);
+            } finally {
+                button.title = originalTitle;
+                button.disabled = false;
+            }
+        }
+
         function showError() {
             const root = document.querySelector(".resume");
             root.innerHTML = "<p class='empty'>Не удалось загрузить данные резюме. Проверьте файл resume.json.</p>";
         }
+
+        document.getElementById("downloadPdf").addEventListener("click", downloadResumePdf);
 
         loadResume()
             .then(renderResume)
