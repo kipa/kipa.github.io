@@ -62,6 +62,13 @@
             gap: 14px;
         }
 
+        .actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
         h1 {
             margin: 0;
             font-size: 2rem;
@@ -75,7 +82,7 @@
             font-size: 1.05rem;
         }
 
-        .download-btn {
+        .icon-btn {
             border: 1px solid #bfdbfe;
             background: #eff6ff;
             color: #1d4ed8;
@@ -90,17 +97,26 @@
             flex-shrink: 0;
         }
 
-        .download-btn:hover {
+        .icon-btn:hover {
             transform: translateY(-1px);
             background: #dbeafe;
             box-shadow: 0 8px 22px rgba(37, 99, 235, 0.2);
         }
 
-        .download-btn:disabled {
+        .icon-btn:disabled {
             opacity: 0.65;
             cursor: progress;
             transform: none;
             box-shadow: none;
+        }
+
+        .lang-btn {
+            width: auto;
+            min-width: 46px;
+            padding: 0 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
         }
 
         .contacts {
@@ -245,12 +261,17 @@
                     <h1 id="name"></h1>
                     <p class="role" id="title"></p>
                 </div>
-                <button id="downloadPdf" class="download-btn" type="button" title="Скачать PDF" aria-label="Скачать резюме в PDF">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M12 3V14M12 14L7.5 9.5M12 14L16.5 9.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M5 16.5V18.2C5 19.1941 5.80589 20 6.8 20H17.2C18.1941 20 19 19.1941 19 18.2V16.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>
-                    </svg>
-                </button>
+                <div class="actions">
+                    <button id="toggleLanguage" class="icon-btn lang-btn" type="button" title="Switch to English" aria-label="Переключить язык на английский" data-no-translate>
+                        EN
+                    </button>
+                    <button id="downloadPdf" class="icon-btn" type="button" title="Скачать PDF" aria-label="Скачать резюме в PDF" data-no-translate>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 3V14M12 14L7.5 9.5M12 14L16.5 9.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M5 16.5V18.2C5 19.1941 5.80589 20 6.8 20H17.2C18.1941 20 19 19.1941 19 18.2V16.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>
+                        </svg>
+                    </button>
+                </div>
             </header>
             <ul class="contacts" id="contacts"></ul>
 
@@ -284,6 +305,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         let loadedResume = null;
+        let currentLanguage = "ru";
+        let isTranslating = false;
+        let baseTitle = "QA Engineer Resume";
+        const originalTextByNode = new Map();
+        const translatedCache = new Map();
 
         function createTimelineItem(item) {
             const li = document.createElement("li");
@@ -337,6 +363,152 @@
             data.forEach((item) => list.appendChild(createTimelineItem(item)));
         }
 
+        function shouldTranslateNode(node) {
+            const text = node.textContent.trim();
+            if (!text) {
+                return false;
+            }
+
+            const parent = node.parentElement;
+            if (!parent) {
+                return false;
+            }
+
+            if (parent.closest("[data-no-translate]")) {
+                return false;
+            }
+
+            const tag = parent.tagName;
+            return tag !== "SCRIPT" && tag !== "STYLE";
+        }
+
+        function collectTranslatableTextNodes() {
+            const root = document.querySelector(".resume");
+            const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+            const nodes = [];
+            let node = walker.nextNode();
+            while (node) {
+                if (shouldTranslateNode(node)) {
+                    nodes.push(node);
+                }
+                node = walker.nextNode();
+            }
+            return nodes;
+        }
+
+        function captureOriginalTextNodes() {
+            const nodes = collectTranslatableTextNodes();
+            nodes.forEach((node) => {
+                originalTextByNode.set(node, node.textContent);
+            });
+        }
+
+        async function translateWithGoogle(text, targetLang) {
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ru&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Google translate request failed: ${response.status}`);
+            }
+
+            const payload = await response.json();
+            if (!Array.isArray(payload) || !Array.isArray(payload[0])) {
+                throw new Error("Unexpected translation payload");
+            }
+
+            return payload[0].map((chunk) => chunk[0]).join("").trim();
+        }
+
+        async function translateWithMyMemory(text, targetLang) {
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=ru|${targetLang}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`MyMemory request failed: ${response.status}`);
+            }
+
+            const payload = await response.json();
+            return payload?.responseData?.translatedText?.trim();
+        }
+
+        async function translateText(text, targetLang) {
+            const source = text.trim();
+            if (!source) {
+                return text;
+            }
+
+            const cacheKey = `${targetLang}:${source}`;
+            if (translatedCache.has(cacheKey)) {
+                return translatedCache.get(cacheKey);
+            }
+
+            let translated = source;
+            try {
+                translated = await translateWithGoogle(source, targetLang);
+            } catch (googleError) {
+                try {
+                    translated = await translateWithMyMemory(source, targetLang) || source;
+                } catch (fallbackError) {
+                    console.error("Translation failed", googleError, fallbackError);
+                    translated = source;
+                }
+            }
+
+            translatedCache.set(cacheKey, translated);
+            return translated;
+        }
+
+        async function setLanguage(targetLanguage) {
+            if (isTranslating || currentLanguage === targetLanguage) {
+                return;
+            }
+
+            const languageButton = document.getElementById("toggleLanguage");
+            isTranslating = true;
+            languageButton.disabled = true;
+
+            try {
+                if (targetLanguage === "ru") {
+                    for (const [node, text] of originalTextByNode.entries()) {
+                        node.textContent = text;
+                    }
+                    document.title = baseTitle;
+                    document.documentElement.lang = "ru";
+                    languageButton.textContent = "EN";
+                    languageButton.title = "Switch to English";
+                    languageButton.setAttribute("aria-label", "Переключить язык на английский");
+                    currentLanguage = "ru";
+                    return;
+                }
+
+                const nodes = [...originalTextByNode.keys()];
+                const uniqueOriginal = [...new Set(nodes.map((node) => originalTextByNode.get(node).trim()).filter(Boolean))];
+                const translatedMap = new Map();
+
+                await Promise.all(uniqueOriginal.map(async (text) => {
+                    const translated = await translateText(text, "en");
+                    translatedMap.set(text, translated || text);
+                }));
+
+                nodes.forEach((node) => {
+                    const original = originalTextByNode.get(node);
+                    const normalized = original.trim();
+                    const translated = translatedMap.get(normalized);
+                    if (normalized && translated) {
+                        node.textContent = original.replace(normalized, translated);
+                    }
+                });
+
+                document.title = await translateText(baseTitle, "en");
+                document.documentElement.lang = "en";
+                languageButton.textContent = "RU";
+                languageButton.title = "Switch to Russian";
+                languageButton.setAttribute("aria-label", "Switch language to Russian");
+                currentLanguage = "en";
+            } finally {
+                languageButton.disabled = false;
+                isTranslating = false;
+            }
+        }
+
         async function loadResume() {
             const response = await fetch("./resume.json", { cache: "no-store" });
             if (!response.ok) {
@@ -347,7 +519,8 @@
 
         function renderResume(data) {
             loadedResume = data;
-            document.title = data.meta?.pageTitle || "QA Engineer Resume";
+            baseTitle = data.meta?.pageTitle || "QA Engineer Resume";
+            document.title = baseTitle;
             document.getElementById("name").textContent = data.profile.name;
             document.getElementById("title").textContent = data.profile.title;
             document.getElementById("summary").textContent = data.summary;
@@ -365,17 +538,9 @@
             renderList("experience", data.experience || []);
             renderList("education", data.education || []);
             renderList("certifications", data.certifications || []);
-        }
 
-        function getPdfFilename() {
-            const rawName = loadedResume?.profile?.name || "qa-resume";
-            const normalized = rawName
-                .trim()
-                .toLowerCase()
-                .replace(/\s+/g, "-")
-                .replace(/[^a-z0-9-]/g, "");
-
-            return `${normalized || "qa-resume"}.pdf`;
+            originalTextByNode.clear();
+            captureOriginalTextNodes();
         }
 
         async function downloadResumePdf() {
@@ -391,12 +556,12 @@
 
             const options = {
                 margin: [12, 12, 12, 12],
-                filename: getPdfFilename(),
+                filename: "cv-qa-kirill-pavlov.pdf",
                 image: { type: "jpeg", quality: 0.98 },
                 html2canvas: {
                     scale: 2,
                     useCORS: true,
-                    ignoreElements: (element) => element.id === "downloadPdf"
+                    ignoreElements: (element) => element.hasAttribute("data-no-translate")
                 },
                 jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
                 pagebreak: { mode: ["css", "legacy"] }
@@ -418,6 +583,10 @@
         }
 
         document.getElementById("downloadPdf").addEventListener("click", downloadResumePdf);
+        document.getElementById("toggleLanguage").addEventListener("click", () => {
+            const next = currentLanguage === "ru" ? "en" : "ru";
+            setLanguage(next);
+        });
 
         loadResume()
             .then(renderResume)
