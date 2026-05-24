@@ -4,6 +4,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>QA Engineer Resume</title>
+    <meta name="description" content="Минималистичное резюме QA Engineer Кирилла Павлова: опыт, навыки, образование, сертификаты и контакты.">
+    <meta name="theme-color" content="#edf3ff">
+    <link rel="canonical" href="https://kipa.github.io/">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Кирилл Павлов — Senior QA Engineer">
+    <meta property="og:description" content="Резюме QA Engineer: опыт работы, ключевые навыки, сертификаты и контакты.">
+    <meta property="og:url" content="https://kipa.github.io/">
+    <meta property="og:site_name" content="Kirill Pavlov QA Resume">
+    <meta property="og:image" content="https://kipa.github.io/profile-photo.jpg">
+    <meta property="og:image:width" content="395">
+    <meta property="og:image:height" content="395">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Кирилл Павлов — Senior QA Engineer">
+    <meta name="twitter:description" content="Резюме QA Engineer: опыт, навыки, сертификаты и контакты.">
+    <meta name="twitter:image" content="https://kipa.github.io/profile-photo.jpg">
     <link rel="icon" type="image/svg+xml" href="./favicon.svg">
     <style>
         :root {
@@ -805,7 +821,6 @@
         </figure>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         let loadedResume = null;
@@ -1273,61 +1288,8 @@
             document.body.classList.remove("modal-open");
         }
 
-        function ensurePdfSpace(doc, state, requiredHeight) {
-            if (state.y + requiredHeight <= state.pageHeight - state.margin) {
-                return;
-            }
-            doc.addPage();
-            state.y = state.margin;
-        }
-
-        function writePdfLines(doc, state, lines, options = {}) {
-            const font = options.font || "normal";
-            const size = options.size || 11;
-            const lineHeight = options.lineHeight || 14;
-            const indent = options.indent || 0;
-            const x = state.margin + indent;
-
-            doc.setFont("helvetica", font);
-            doc.setFontSize(size);
-
-            lines.forEach((line) => {
-                ensurePdfSpace(doc, state, lineHeight + 2);
-                doc.text(line, x, state.y);
-                state.y += lineHeight;
-            });
-        }
-
-        function writePdfParagraph(doc, state, text, options = {}) {
-            const indent = options.indent || 0;
-            const availableWidth = state.contentWidth - indent;
-            const lines = doc.splitTextToSize(text, availableWidth);
-            writePdfLines(doc, state, lines, options);
-        }
-
-        function writePdfSectionTitle(doc, state, title) {
-            ensurePdfSpace(doc, state, 24);
-            writePdfLines(doc, state, [title], { font: "bold", size: 12, lineHeight: 16 });
-            state.y += 2;
-        }
-
-        async function loadImageAsDataUrl(url) {
-            const response = await fetch(url, { cache: "no-store" });
-            if (!response.ok) {
-                throw new Error(`Cannot load image: ${response.status}`);
-            }
-
-            const blob = await response.blob();
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = () => reject(new Error("Cannot convert image to data URL"));
-                reader.readAsDataURL(blob);
-            });
-        }
-
         async function downloadResumePdf() {
-            if (!loadedResume || !window.jspdf?.jsPDF) {
+            if (!loadedResume || typeof html2pdf !== "function") {
                 return;
             }
 
@@ -1337,102 +1299,48 @@
             button.disabled = true;
 
             try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+                setActionsMenuOpen(false);
+                closePhotoModal();
 
-                const state = {
-                    margin: 52,
-                    y: 60,
-                    pageHeight: doc.internal.pageSize.getHeight(),
-                    contentWidth: doc.internal.pageSize.getWidth() - 104
+                const resumeRoot = document.getElementById("resumeRoot");
+                const options = {
+                    margin: [10, 10, 10, 10],
+                    filename: "cv-qa-kirill-pavlov.pdf",
+                    image: { type: "jpeg", quality: 0.98 },
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: "#f3f7ff",
+                        onclone: (clonedDocument) => {
+                            const clonedResume = clonedDocument.getElementById("resumeRoot");
+                            if (clonedResume) {
+                                clonedResume.classList.remove("loading");
+                                clonedResume.classList.remove("ready");
+                            }
+
+                            const clonedActions = clonedDocument.querySelector("#actionsPanel");
+                            if (clonedActions) {
+                                clonedActions.classList.remove("open");
+                            }
+
+                            const clonedActionsWrap = clonedDocument.querySelector(".actions-wrap");
+                            if (clonedActionsWrap) {
+                                clonedActionsWrap.style.display = "none";
+                            }
+
+                            clonedDocument.body.classList.remove("modal-open");
+
+                            const clonedModal = clonedDocument.getElementById("photoModal");
+                            if (clonedModal) {
+                                clonedModal.remove();
+                            }
+                        }
+                    },
+                    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+                    pagebreak: { mode: ["css", "legacy"] }
                 };
 
-                let photoDataUrl = null;
-                const photoSource = currentPhotoSource || loadedResume.profile?.photo;
-                if (photoSource) {
-                    try {
-                        photoDataUrl = await loadImageAsDataUrl(photoSource);
-                    } catch (photoError) {
-                        photoDataUrl = null;
-                    }
-                }
-
-                let headerOffsetX = state.margin;
-                if (photoDataUrl) {
-                    const imageType = photoDataUrl.includes("image/png") ? "PNG" : "JPEG";
-                    doc.addImage(photoDataUrl, imageType, state.margin, 50, 56, 56);
-                    headerOffsetX += 70;
-                }
-
-                writePdfLines(doc, state, [loadedResume.profile?.name || ""], {
-                    font: "bold",
-                    size: 20,
-                    lineHeight: 24,
-                    indent: headerOffsetX - state.margin
-                });
-                writePdfLines(doc, state, [loadedResume.profile?.title || ""], {
-                    font: "normal",
-                    size: 12,
-                    lineHeight: 16,
-                    indent: headerOffsetX - state.margin
-                });
-                state.y = Math.max(state.y, 116);
-
-                const contactsText = (loadedResume.contacts || [])
-                    .map((contact) => contact.label)
-                    .filter(Boolean)
-                    .join(" | ");
-                if (contactsText) {
-                    state.y += 6;
-                    writePdfParagraph(doc, state, contactsText, { size: 10, lineHeight: 14 });
-                }
-
-                state.y += 10;
-                writePdfSectionTitle(doc, state, "О себе");
-                writePdfParagraph(doc, state, loadedResume.summary || "", { size: 11, lineHeight: 15 });
-
-                state.y += 8;
-                writePdfSectionTitle(doc, state, "Ключевые навыки");
-                (loadedResume.skills || []).forEach((skill) => {
-                    writePdfParagraph(doc, state, `- ${skill}`, { size: 11, lineHeight: 15 });
-                });
-
-                state.y += 8;
-                writePdfSectionTitle(doc, state, "Опыт работы");
-                (loadedResume.experience || []).forEach((item) => {
-                    writePdfLines(doc, state, [item.position || ""], { font: "bold", size: 11, lineHeight: 15 });
-                    const meta = [item.company, item.period].filter(Boolean).join(" - ");
-                    if (meta) {
-                        writePdfLines(doc, state, [meta], { size: 10, lineHeight: 14 });
-                    }
-                    if (item.description) {
-                        writePdfParagraph(doc, state, item.description, { size: 11, lineHeight: 15 });
-                    }
-                    state.y += 6;
-                });
-
-                state.y += 2;
-                writePdfSectionTitle(doc, state, "Образование");
-                (loadedResume.education || []).forEach((item) => {
-                    writePdfLines(doc, state, [item.program || ""], { font: "bold", size: 11, lineHeight: 15 });
-                    const meta = [item.school, item.period].filter(Boolean).join(" - ");
-                    if (meta) {
-                        writePdfLines(doc, state, [meta], { size: 10, lineHeight: 14 });
-                    }
-                    if (item.description) {
-                        writePdfParagraph(doc, state, item.description, { size: 11, lineHeight: 15 });
-                    }
-                    state.y += 6;
-                });
-
-                state.y += 2;
-                writePdfSectionTitle(doc, state, "Сертификаты");
-                (loadedResume.certifications || []).forEach((item) => {
-                    const line = [item.name, item.issuer, item.period].filter(Boolean).join(" - ");
-                    writePdfParagraph(doc, state, line, { size: 11, lineHeight: 15 });
-                });
-
-                doc.save("cv-qa-kirill-pavlov.pdf");
+                await html2pdf().set(options).from(resumeRoot).save();
             } catch (error) {
                 console.error("Cannot generate PDF", error);
             } finally {
