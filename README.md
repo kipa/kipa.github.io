@@ -33,6 +33,7 @@
 - По клику на фото открывается увеличенный просмотр по центру экрана
 - В верхней панели есть иконка-ссылка на Telegram
 - В мобильной версии кнопки действий доступны через кнопку-гамбургер
+- Для фото можно задать отдельные источники: миниатюра (`profile.photoThumbnail`) и увеличенное фото (`profile.photoModal`)
 
 ## SEO и предпросмотр ссылок (Telegram / WhatsApp)
 
@@ -47,7 +48,7 @@
 ## Структура данных
 
 - `meta.pageTitle` — заголовок страницы в браузере
-- `profile` — имя, должность, фото (`profile.photo`), Telegram (`profile.telegram`) и текущая компания (`profile.currentCompany`)
+- `profile` — имя, должность, фото (`profile.photo`), отдельные фото для миниатюры/модалки (`profile.photoThumbnail`, `profile.photoModal`), Telegram (`profile.telegram`) и текущая компания (`profile.currentCompany`)
 - `summary` — краткое описание
 - `contacts[]` — контакты (`label` и опционально `href`)
 - `skills[]` — список навыков
