@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "pageTitle": "Резюме QA Engineer"
+  },
+  "profile": {
+    "name": "Кирилл Павлов",
+    "title": "Senior QA Engineer"
+  },
+  "summary": "QA-инженер с опытом ручного и автоматизированного тестирования веб-продуктов. Специализируюсь на построении прозрачных процессов качества, снижении числа регрессий и ускорении релизов через автоматизацию критичных сценариев.",
+  "contacts": [
+    { "label": "Москва, Россия" },
+    { "label": "kirill.qa@example.com", "href": "mailto:kirill.qa@example.com" },
+    { "label": "+7 (900) 000-00-00", "href": "tel:+79000000000" },
+    { "label": "github.com/kirill-qa", "href": "https://github.com/kirill-qa" },
+    { "label": "linkedin.com/in/kirill-qa", "href": "https://linkedin.com/in/kirill-qa" }
+  ],
+  "skills": [
+    "Тест-дизайн: эквивалентные классы, граничные значения, pairwise",
+    "API-тестирование: Postman, Swagger, Charles Proxy",
+    "Автотесты: Playwright, Cypress, JavaScript/TypeScript",
+    "CI/CD и качество релиза: GitHub Actions, отчеты Allure",
+    "SQL и валидация данных в PostgreSQL",
+    "Работа в Agile-командах, менторство QA"
+  ],
+  "experience": [
+    {
+      "position": "Senior QA Engineer",
+      "company": "FinTech Platform",
+      "period": "2022 - настоящее время",
+      "description": "Разработал стратегию тестирования для 4 продуктовых команд, внедрил smoke/regression-пайплайны и сократил количество критичных дефектов в проде на 35%."
+    },
+    {
+      "position": "QA Engineer",
+      "company": "E-commerce Company",
+      "period": "2019 - 2022",
+      "description": "Покрыл автотестами ключевые пользовательские потоки checkout и личного кабинета, что сократило время регрессии с 2 дней до 4 часов."
+    }
+  ],
+  "education": [
+    {
+      "program": "Прикладная информатика, бакалавр",
+      "school": "НИУ ВШЭ",
+      "period": "2015 - 2019",
+      "description": "Фокус на разработке ПО, анализе требований и инженерии качества."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "ISTQB Certified Tester Foundation Level",
+      "issuer": "ISTQB",
+      "period": "2021"
+    },
+    {
+      "name": "Playwright Test Automation",
+      "issuer": "Udemy",
+      "period": "2023"
+    }
+  ]
+}
