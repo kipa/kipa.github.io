@@ -273,6 +273,38 @@
             gap: 14px;
         }
 
+        .identity {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .identity-text {
+            min-width: 0;
+        }
+
+        .profile-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, 0.86);
+            box-shadow: 0 8px 20px rgba(30, 64, 175, 0.16);
+            background: rgba(226, 232, 240, 0.9);
+        }
+
+        .profile-photo.skeleton {
+            border: 0;
+            box-shadow: none;
+        }
+
+        .profile-photo.photo-hidden {
+            display: none;
+        }
+
         .actions {
             display: inline-flex;
             align-items: center;
@@ -504,6 +536,11 @@
                 border-radius: 14px;
             }
 
+            .profile-photo {
+                width: 52px;
+                height: 52px;
+            }
+
             .glass-orb {
                 opacity: 0.42;
                 filter: blur(3px);
@@ -541,9 +578,17 @@
     <main class="container">
         <article class="resume loading" id="resumeRoot">
             <header class="header reveal">
-                <div>
-                    <h1 id="name" class="skeleton skeleton-title"></h1>
-                    <p class="role skeleton skeleton-line short" id="title"></p>
+                <div class="identity">
+                    <img
+                        id="profilePhoto"
+                        class="profile-photo skeleton"
+                        src="data:image/gif;base64,R0lGODlhAQABAAAAACw="
+                        alt="Фото профиля"
+                    >
+                    <div class="identity-text">
+                        <h1 id="name" class="skeleton skeleton-title"></h1>
+                        <p class="role skeleton skeleton-line short" id="title"></p>
+                    </div>
                 </div>
                 <div class="actions">
                     <button id="toggleLanguage" class="icon-btn lang-btn" type="button" title="Switch to English" aria-label="Переключить язык на английский" data-no-translate>
@@ -621,6 +666,7 @@
         let currentLanguage = "ru";
         let isTranslating = false;
         let baseTitle = "QA Engineer Resume";
+        const DEFAULT_PROFILE_PHOTO = "./profile-photo.jpg";
         const originalTextByNode = new Map();
         const translatedCache = new Map();
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -703,6 +749,33 @@
                 root.classList.remove("loading");
                 root.classList.add("ready");
             });
+        }
+
+        function setProfilePhoto(profile) {
+            const photo = document.getElementById("profilePhoto");
+            const preferredSource = profile?.photo || DEFAULT_PROFILE_PHOTO;
+            let fallbackTried = false;
+
+            photo.classList.remove("photo-hidden");
+            photo.classList.add("skeleton");
+            photo.alt = `Фото ${profile?.name || "кандидата"}`;
+
+            photo.onload = () => {
+                photo.classList.remove("skeleton");
+            };
+
+            photo.onerror = () => {
+                if (!fallbackTried) {
+                    fallbackTried = true;
+                    photo.src = DEFAULT_PROFILE_PHOTO;
+                    return;
+                }
+
+                photo.classList.remove("skeleton");
+                photo.classList.add("photo-hidden");
+            };
+
+            photo.src = preferredSource;
         }
 
         function queueBackgroundParallaxFrame() {
@@ -933,6 +1006,7 @@
             loadedResume = data;
             baseTitle = data.meta?.pageTitle || "QA Engineer Resume";
             document.title = baseTitle;
+            setProfilePhoto(data.profile || {});
             document.getElementById("name").textContent = data.profile.name;
             document.getElementById("title").textContent = data.profile.title;
             document.getElementById("summary").textContent = data.summary;
@@ -988,7 +1062,7 @@
                     }
                 },
                 jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-                pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+                pagebreak: { mode: ["css", "legacy"] }
             };
 
             try {
