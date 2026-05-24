@@ -31,11 +31,13 @@
   ],
   "skills": [
     "Тест-дизайн: эквивалентные классы, граничные значения, pairwise",
-    "API-тестирование: Postman, Swagger, Charles Proxy",
+    "API-тестирование: Postman, Bruno, Swagger, Charles Proxy",
     "Автотесты: Playwright, Selenium, Python, Pytest",
     "CI/CD и качество релиза: Gitlab CI, GitHub Actions, отчеты Allure",
-    "SQL и валидация данных в PostgreSQL",
-    "Работа в Agile-командах, менторство QA"
+    "SQL и валидация данных в MSSQL, PostgreSQL",
+    "Работа в Agile-командах, менторство QA",
+    "Внедрение AI в автоматизацию тестирования",
+    "Нагрузочное тестирование Locust, JMeter"
   ],
   "experience": [
     {
@@ -53,7 +55,13 @@
   ],
   "education": [
     {
-      "program": "Программная инженерия",
+      "program": "Информатика и вычислительная техника, магистратура",
+      "school": "Российский технологический университет (МИРЭА)",
+      "period": "2018 - 2020",
+      "description": "Фокус на разработке ПО, анализе требований и инженерии качества."
+    },
+    {
+      "program": "Программная инженерия, бакалавриат",
       "school": "Российский технологический университет (МИРЭА)",
       "period": "2014 - 2018",
       "description": "Фокус на разработке ПО, анализе требований и инженерии качества."
@@ -61,14 +69,14 @@
   ],
   "certifications": [
     {
-      "name": "ISTQB Certified Tester Foundation Level",
-      "issuer": "ISTQB",
-      "period": "2021"
-    },
-    {
       "name": "ISTQB Test Manager",
       "issuer": "ISTQB",
       "period": "2023"
+    },
+    {
+      "name": "ISTQB Certified Tester Foundation Level",
+      "issuer": "ISTQB",
+      "period": "2021"
     }
   ]
 }
