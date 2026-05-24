@@ -6,6 +6,8 @@
     "name": "Кирилл Павлов",
     "title": "Senior QA Engineer",
     "photo": "./profile-photo.jpg",
+    "photoThumbnail": "./profile-photo.jpg",
+    "photoModal": "./profile-photo-expanded.jpg",
     "telegram": "https://kipavlo.t.me/",
     "currentCompany": "CROC"
   },
