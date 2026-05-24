@@ -6,9 +6,9 @@
     "buttons": {
       "profilePhoto": "Открыть фото",
       "actionsMenu": "Открыть меню",
-      "telegram": "Открыть Telegram",
+      "telegram": "Написать в Telegram",
       "languageToEn": "Switch to English",
-      "languageToRu": "Switch to Russian",
+      "languageToRu": "Переключить на Русский",
       "downloadPdf": "Скачать PDF",
       "downloadPdfLoadingRu": "Генерация PDF...",
       "downloadPdfLoadingEn": "Generating PDF...",
@@ -22,31 +22,31 @@
     "photoThumbnail": "./profile-photo.jpg",
     "photoModal": "./profile-photo-expanded.jpg",
     "telegram": "https://kipavlo.t.me/",
-    "currentCompany": "CROC"
+    "currentCompany": "КРОК"
   },
   "summary": "QA-инженер с опытом ручного и автоматизированного тестирования веб-продуктов. Специализируюсь на построении прозрачных процессов качества, снижении числа регрессий и ускорении релизов через автоматизацию критичных сценариев.",
   "contacts": [
     { "label": "kipavlo.t.me", "href": "https://kipavlo.t.me/", "tooltip": "Написать в Telegram" },
-    { "label": "kipavlo@yahoo.com", "href": "mailto:kipavlo@yahoo.com", "tooltip": "Отправить email" }
+    { "label": "kipavlo@yahoo.com", "href": "mailto:kipavlo@yahoo.com", "tooltip": "Отправить Email" }
   ],
   "skills": [
     "Тест-дизайн: эквивалентные классы, граничные значения, pairwise",
     "API-тестирование: Postman, Swagger, Charles Proxy",
-    "Автотесты: Playwright, Cypress, JavaScript/TypeScript",
-    "CI/CD и качество релиза: GitHub Actions, отчеты Allure",
+    "Автотесты: Playwright, Selenium, Python, Pytest",
+    "CI/CD и качество релиза: Gitlab CI, GitHub Actions, отчеты Allure",
     "SQL и валидация данных в PostgreSQL",
     "Работа в Agile-командах, менторство QA"
   ],
   "experience": [
     {
       "position": "Senior QA Engineer",
-      "company": "CROC",
+      "company": "КРОК",
       "period": "2022 - настоящее время",
       "description": "Разработал стратегию тестирования для 4 продуктовых команд, внедрил smoke/regression-пайплайны и сократил количество критичных дефектов в проде на 35%."
     },
     {
       "position": "QA Engineer",
-      "company": "CROC",
+      "company": "КРОК",
       "period": "2018 - 2022",
       "description": "Покрыл автотестами ключевые пользовательские потоки checkout и личного кабинета, что сократило время регрессии с 2 дней до 4 часов."
     }
