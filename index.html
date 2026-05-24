@@ -190,6 +190,21 @@
             }
         }
 
+        @keyframes onlinePulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.95;
+            }
+            70% {
+                transform: scale(1.35);
+                opacity: 0.45;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.95;
+            }
+        }
+
         .resume::before {
             content: "";
             position: absolute;
@@ -367,6 +382,42 @@
             margin: 6px 0 0;
             color: var(--muted);
             font-size: 0.92rem;
+        }
+
+        .status-chip {
+            margin: 8px 0 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #bfdbfe;
+            background: rgba(239, 246, 255, 0.84);
+            color: #1e40af;
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-size: 0.76rem;
+            line-height: 1.2;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+            animation: onlinePulse 1.9s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        .status-chip.hidden {
+            display: none;
+        }
+
+        .status-skeleton {
+            width: min(320px, 90%);
+            height: 23px;
+            padding: 0;
+            border: 0;
+            border-radius: 6px;
         }
 
         .icon-btn {
@@ -633,7 +684,8 @@
         @media (prefers-reduced-motion: reduce) {
             .skeleton,
             .resume.ready .reveal,
-            .glass-orb {
+            .glass-orb,
+            .status-dot {
                 animation: none !important;
             }
 
@@ -733,6 +785,7 @@
                     <div class="identity-text">
                         <h1 id="name" class="skeleton skeleton-title"></h1>
                         <p class="role skeleton skeleton-line short" id="title"></p>
+                        <p id="currentStatus" class="status-chip skeleton status-skeleton"></p>
                     </div>
                 </div>
                 <div class="actions-wrap" data-no-translate>
@@ -907,16 +960,39 @@
             const title = document.getElementById("title");
             const summary = document.getElementById("summary");
             const skills = document.getElementById("skills");
+            const status = document.getElementById("currentStatus");
 
             name.classList.remove("skeleton", "skeleton-title");
             title.classList.remove("skeleton", "skeleton-line", "short");
             summary.classList.remove("skeleton", "skeleton-line");
             skills.classList.remove("is-skeleton");
+            status.classList.remove("skeleton", "status-skeleton");
 
             requestAnimationFrame(() => {
                 root.classList.remove("loading");
                 root.classList.add("ready");
             });
+        }
+
+        function renderCurrentStatus(profile) {
+            const status = document.getElementById("currentStatus");
+            const company = typeof profile?.currentCompany === "string" ? profile.currentCompany.trim() : "";
+
+            status.innerHTML = "";
+            status.classList.remove("hidden");
+
+            if (!company) {
+                status.classList.add("hidden");
+                return;
+            }
+
+            const dot = document.createElement("span");
+            dot.className = "status-dot";
+            status.appendChild(dot);
+
+            const label = document.createElement("span");
+            label.textContent = `online · сейчас работаю в ${company}`;
+            status.appendChild(label);
         }
 
         function setProfilePhoto(profile) {
@@ -1246,6 +1322,7 @@
             document.title = baseTitle;
             setProfilePhoto(data.profile || {});
             setTelegramLink(data.profile || {}, data.contacts || []);
+            renderCurrentStatus(data.profile || {});
             document.getElementById("name").textContent = data.profile.name;
             document.getElementById("title").textContent = data.profile.title;
             document.getElementById("summary").textContent = data.summary;
