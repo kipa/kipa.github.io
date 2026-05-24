@@ -482,7 +482,7 @@
             list-style: none;
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 0;
             color: var(--muted);
             font-size: 0.92rem;
         }
@@ -491,6 +491,21 @@
             padding: 0;
             display: inline-flex;
             align-items: center;
+        }
+
+        .contacts li + li::before {
+            content: "|";
+            color: #94a3b8;
+            margin: 0 8px;
+        }
+
+        .contacts.is-skeleton li + li::before {
+            content: none;
+            margin: 0;
+        }
+
+        .contacts.is-skeleton {
+            gap: 8px;
         }
 
         .contacts a,
