@@ -47,12 +47,94 @@
             overflow: hidden;
         }
 
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .resume::before {
             content: "";
             position: absolute;
             inset: 0 0 auto;
             height: 4px;
             background: linear-gradient(90deg, #93c5fd 0%, #3b82f6 45%, #2563eb 100%);
+        }
+
+        .reveal {
+            opacity: 1;
+        }
+
+        .resume.ready .reveal {
+            opacity: 0;
+            animation: fadeInUp 0.42s ease forwards;
+        }
+
+        .resume.ready .reveal:nth-child(1) { animation-delay: 0.02s; }
+        .resume.ready .reveal:nth-child(2) { animation-delay: 0.08s; }
+        .resume.ready .reveal:nth-child(3) { animation-delay: 0.14s; }
+        .resume.ready .reveal:nth-child(4) { animation-delay: 0.2s; }
+        .resume.ready .reveal:nth-child(5) { animation-delay: 0.26s; }
+        .resume.ready .reveal:nth-child(6) { animation-delay: 0.32s; }
+        .resume.ready .reveal:nth-child(7) { animation-delay: 0.38s; }
+
+        .skeleton {
+            border-radius: 10px;
+            color: transparent;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(90deg, #eef2ff 20%, #dbeafe 50%, #eef2ff 80%);
+            background-size: 220% 100%;
+            animation: shimmer 1.4s linear infinite;
+        }
+
+        .skeleton-title {
+            height: 38px;
+            width: min(72%, 340px);
+        }
+
+        .skeleton-line {
+            height: 14px;
+            width: 100%;
+        }
+
+        .skeleton-line.short {
+            width: 62%;
+        }
+
+        .skeleton-pill {
+            width: 110px;
+            height: 28px;
+            border-radius: 999px;
+            border: 0;
+            padding: 0;
+        }
+
+        .is-skeleton {
+            list-style: none;
+        }
+
+        .is-skeleton li {
+            list-style: none;
+        }
+
+        .resume.loading .icon-btn {
+            opacity: 0.55;
+            pointer-events: none;
         }
 
         .header {
@@ -229,6 +311,40 @@
             color: #1f2937;
         }
 
+        .skills.is-skeleton {
+            padding-left: 0;
+            display: grid;
+            gap: 8px;
+        }
+
+        .skills.is-skeleton li:nth-child(2) { width: 92%; }
+        .skills.is-skeleton li:nth-child(3) { width: 84%; }
+        .skills.is-skeleton li:nth-child(4) { width: 76%; }
+
+        .timeline.is-skeleton {
+            gap: 12px;
+        }
+
+        .timeline.is-skeleton li {
+            border: 0;
+            padding-left: 0;
+            display: grid;
+            gap: 7px;
+        }
+
+        .timeline.is-skeleton li::before {
+            display: none;
+        }
+
+        .timeline.is-skeleton li .skeleton-line:first-child {
+            width: 58%;
+            height: 15px;
+        }
+
+        .timeline.is-skeleton li .skeleton-line:last-child {
+            width: 86%;
+        }
+
         .empty {
             color: #991b1b;
             background: #fee2e2;
@@ -255,11 +371,11 @@
 </head>
 <body>
     <main class="container">
-        <article class="resume">
-            <header class="header">
+        <article class="resume loading" id="resumeRoot">
+            <header class="header reveal">
                 <div>
-                    <h1 id="name"></h1>
-                    <p class="role" id="title"></p>
+                    <h1 id="name" class="skeleton skeleton-title"></h1>
+                    <p class="role skeleton skeleton-line short" id="title"></p>
                 </div>
                 <div class="actions">
                     <button id="toggleLanguage" class="icon-btn lang-btn" type="button" title="Switch to English" aria-label="Переключить язык на английский" data-no-translate>
@@ -273,31 +389,60 @@
                     </button>
                 </div>
             </header>
-            <ul class="contacts" id="contacts"></ul>
+            <ul class="contacts is-skeleton reveal" id="contacts">
+                <li class="skeleton skeleton-pill"></li>
+                <li class="skeleton skeleton-pill"></li>
+                <li class="skeleton skeleton-pill"></li>
+                <li class="skeleton skeleton-pill"></li>
+            </ul>
 
-            <section>
+            <section class="reveal">
                 <h2>О себе</h2>
-                <p id="summary"></p>
+                <p id="summary" class="skeleton skeleton-line"></p>
             </section>
 
-            <section>
+            <section class="reveal">
                 <h2>Ключевые навыки</h2>
-                <ul class="skills" id="skills"></ul>
+                <ul class="skills is-skeleton" id="skills">
+                    <li class="skeleton skeleton-line"></li>
+                    <li class="skeleton skeleton-line"></li>
+                    <li class="skeleton skeleton-line"></li>
+                    <li class="skeleton skeleton-line"></li>
+                </ul>
             </section>
 
-            <section>
+            <section class="reveal">
                 <h2>Опыт работы</h2>
-                <ul class="timeline" id="experience"></ul>
+                <ul class="timeline is-skeleton" id="experience">
+                    <li>
+                        <span class="skeleton skeleton-line"></span>
+                        <span class="skeleton skeleton-line"></span>
+                    </li>
+                    <li>
+                        <span class="skeleton skeleton-line"></span>
+                        <span class="skeleton skeleton-line"></span>
+                    </li>
+                </ul>
             </section>
 
-            <section>
+            <section class="reveal">
                 <h2>Образование</h2>
-                <ul class="timeline" id="education"></ul>
+                <ul class="timeline is-skeleton" id="education">
+                    <li>
+                        <span class="skeleton skeleton-line"></span>
+                        <span class="skeleton skeleton-line"></span>
+                    </li>
+                </ul>
             </section>
 
-            <section>
+            <section class="reveal">
                 <h2>Сертификаты</h2>
-                <ul class="timeline" id="certifications"></ul>
+                <ul class="timeline is-skeleton" id="certifications">
+                    <li>
+                        <span class="skeleton skeleton-line"></span>
+                        <span class="skeleton skeleton-line"></span>
+                    </li>
+                </ul>
             </section>
         </article>
     </main>
@@ -337,6 +482,7 @@
 
         function renderContacts(contacts) {
             const contactsList = document.getElementById("contacts");
+            contactsList.classList.remove("is-skeleton");
             contactsList.innerHTML = "";
 
             contacts.forEach((contact) => {
@@ -359,8 +505,27 @@
 
         function renderList(id, data) {
             const list = document.getElementById(id);
+            list.classList.remove("is-skeleton");
             list.innerHTML = "";
             data.forEach((item) => list.appendChild(createTimelineItem(item)));
+        }
+
+        function finishLoadingState() {
+            const root = document.getElementById("resumeRoot");
+            const name = document.getElementById("name");
+            const title = document.getElementById("title");
+            const summary = document.getElementById("summary");
+            const skills = document.getElementById("skills");
+
+            name.classList.remove("skeleton", "skeleton-title");
+            title.classList.remove("skeleton", "skeleton-line", "short");
+            summary.classList.remove("skeleton", "skeleton-line");
+            skills.classList.remove("is-skeleton");
+
+            requestAnimationFrame(() => {
+                root.classList.remove("loading");
+                root.classList.add("ready");
+            });
         }
 
         function shouldTranslateNode(node) {
@@ -541,6 +706,7 @@
 
             originalTextByNode.clear();
             captureOriginalTextNodes();
+            finishLoadingState();
         }
 
         async function downloadResumePdf() {
@@ -579,6 +745,7 @@
 
         function showError() {
             const root = document.querySelector(".resume");
+            root.classList.remove("loading");
             root.innerHTML = "<p class='empty'>Не удалось загрузить данные резюме. Проверьте файл resume.json.</p>";
         }
 
