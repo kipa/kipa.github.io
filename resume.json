@@ -6,7 +6,8 @@
     "name": "Кирилл Павлов",
     "title": "Senior QA Engineer",
     "photo": "./profile-photo.jpg",
-    "telegram": "https://kipavlo.t.me/"
+    "telegram": "https://kipavlo.t.me/",
+    "currentCompany": "CROC"
   },
   "summary": "QA-инженер с опытом ручного и автоматизированного тестирования веб-продуктов. Специализируюсь на построении прозрачных процессов качества, снижении числа регрессий и ускорении релизов через автоматизацию критичных сценариев.",
   "contacts": [
