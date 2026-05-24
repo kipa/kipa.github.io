@@ -1,29 +1,261 @@
 <!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kirill Pavlov</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>QA Engineer Resume</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --text: #111827;
+            --muted: #4b5563;
+            --line: #e5e7eb;
+            --bg: #f9fafb;
+            --card: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 760px;
+            margin: 48px auto;
+            padding: 0 20px;
+        }
+
+        .resume {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 28px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+            line-height: 1.1;
+        }
+
+        .role {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .contacts {
+            margin: 18px 0 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .contacts a {
+            color: inherit;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .contacts a:hover {
+            border-bottom-color: currentColor;
+        }
+
+        section {
+            border-top: 1px solid var(--line);
+            margin-top: 22px;
+            padding-top: 22px;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .skills {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .skills li + li {
+            margin-top: 4px;
+        }
+
+        .timeline {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 16px;
+        }
+
+        .timeline h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .timeline .meta {
+            margin: 4px 0 6px;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .timeline .description {
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .empty {
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+    </style>
+</head>
 <body>
-    <section class="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:px-8">
-        <div class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.indigo.100),white)] opacity-20"></div>
-        <div class="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
-        <div class="mx-auto max-w-2xl lg:max-w-4xl">
-            <img class="mx-auto h-12" src="https://tailwindui.com/plus/img/logos/workcation-logo-indigo-600.svg" alt="">
-            <figure class="mt-10">
-                <blockquote class="text-center text-xl font-semibold leading-8 text-gray-900 sm:text-2xl sm:leading-9">
-                    <p>“Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo expedita voluptas culpa sapiente alias molestiae. Numquam corrupti in laborum sed rerum et corporis.”</p>
-                </blockquote>
-                <figcaption class="mt-10">
-                    <div class="mt-4 flex items-center justify-center space-x-3 text-base">
-                        <div class="font-semibold text-gray-900">Kirill Pavlov</div>
-                        <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" class="fill-gray-900">
-                            <circle cx="1" cy="1" r="1" />
-                        </svg>
-                        <div class="text-gray-600">Senior QA Engineer</div>
-                    </div>
-                </figcaption>
-            </figure>
-        </div>
-    </section>
+    <main class="container">
+        <article class="resume">
+            <header>
+                <h1 id="name"></h1>
+                <p class="role" id="title"></p>
+                <ul class="contacts" id="contacts"></ul>
+            </header>
+
+            <section>
+                <h2>О себе</h2>
+                <p id="summary"></p>
+            </section>
+
+            <section>
+                <h2>Ключевые навыки</h2>
+                <ul class="skills" id="skills"></ul>
+            </section>
+
+            <section>
+                <h2>Опыт работы</h2>
+                <ul class="timeline" id="experience"></ul>
+            </section>
+
+            <section>
+                <h2>Образование</h2>
+                <ul class="timeline" id="education"></ul>
+            </section>
+
+            <section>
+                <h2>Сертификаты</h2>
+                <ul class="timeline" id="certifications"></ul>
+            </section>
+        </article>
+    </main>
+
+    <script>
+        function createTimelineItem(item) {
+            const li = document.createElement("li");
+
+            const heading = document.createElement("h3");
+            heading.textContent = item.position || item.program || item.name || "";
+            li.appendChild(heading);
+
+            const meta = document.createElement("p");
+            meta.className = "meta";
+            meta.textContent = [item.company || item.school || item.issuer, item.period]
+                .filter(Boolean)
+                .join(" - ");
+            li.appendChild(meta);
+
+            if (item.description) {
+                const description = document.createElement("p");
+                description.className = "description";
+                description.textContent = item.description;
+                li.appendChild(description);
+            }
+
+            return li;
+        }
+
+        function renderContacts(contacts) {
+            const contactsList = document.getElementById("contacts");
+            contactsList.innerHTML = "";
+
+            contacts.forEach((contact) => {
+                const item = document.createElement("li");
+                if (contact.href) {
+                    const link = document.createElement("a");
+                    link.href = contact.href;
+                    link.textContent = contact.label;
+                    link.target = "_blank";
+                    link.rel = "noopener noreferrer";
+                    item.appendChild(link);
+                } else {
+                    item.textContent = contact.label;
+                }
+                contactsList.appendChild(item);
+            });
+        }
+
+        function renderList(id, data) {
+            const list = document.getElementById(id);
+            list.innerHTML = "";
+            data.forEach((item) => list.appendChild(createTimelineItem(item)));
+        }
+
+        async function loadResume() {
+            const response = await fetch("./resume.json", { cache: "no-store" });
+            if (!response.ok) {
+                throw new Error("Cannot load resume content");
+            }
+            return response.json();
+        }
+
+        function renderResume(data) {
+            document.title = data.meta?.pageTitle || "QA Engineer Resume";
+            document.getElementById("name").textContent = data.profile.name;
+            document.getElementById("title").textContent = data.profile.title;
+            document.getElementById("summary").textContent = data.summary;
+
+            renderContacts(data.contacts || []);
+
+            const skills = document.getElementById("skills");
+            skills.innerHTML = "";
+            (data.skills || []).forEach((skill) => {
+                const item = document.createElement("li");
+                item.textContent = skill;
+                skills.appendChild(item);
+            });
+
+            renderList("experience", data.experience || []);
+            renderList("education", data.education || []);
+            renderList("certifications", data.certifications || []);
+        }
+
+        function showError() {
+            const root = document.querySelector(".resume");
+            root.innerHTML = "<p class='empty'>Не удалось загрузить данные резюме. Проверьте файл resume.json.</p>";
+        }
+
+        loadResume()
+            .then(renderResume)
+            .catch(showError);
+    </script>
 </body>
+</html>
