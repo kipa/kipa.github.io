@@ -27,22 +27,22 @@
   "experience": [
     {
       "position": "Senior QA Engineer",
-      "company": "FinTech Platform",
+      "company": "CROC",
       "period": "2022 - настоящее время",
       "description": "Разработал стратегию тестирования для 4 продуктовых команд, внедрил smoke/regression-пайплайны и сократил количество критичных дефектов в проде на 35%."
     },
     {
       "position": "QA Engineer",
-      "company": "E-commerce Company",
-      "period": "2019 - 2022",
+      "company": "CROC",
+      "period": "2018 - 2022",
       "description": "Покрыл автотестами ключевые пользовательские потоки checkout и личного кабинета, что сократило время регрессии с 2 дней до 4 часов."
     }
   ],
   "education": [
     {
-      "program": "Прикладная информатика, бакалавр",
-      "school": "НИУ ВШЭ",
-      "period": "2015 - 2019",
+      "program": "Программная инженерия",
+      "school": "Российский технологический университет (МИРЭА)",
+      "period": "2014 - 2018",
       "description": "Фокус на разработке ПО, анализе требований и инженерии качества."
     }
   ],
@@ -53,8 +53,8 @@
       "period": "2021"
     },
     {
-      "name": "Playwright Test Automation",
-      "issuer": "Udemy",
+      "name": "ISTQB Test Manager",
+      "issuer": "ISTQB",
       "period": "2023"
     }
   ]
