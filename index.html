@@ -25,29 +25,107 @@
             margin: 0;
             font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             color: var(--text);
-            background:
-                radial-gradient(700px 350px at 100% -10%, #dbeafe 0%, rgba(219, 234, 254, 0) 70%),
-                radial-gradient(600px 320px at -10% 0%, #e0e7ff 0%, rgba(224, 231, 255, 0) 72%),
-                var(--bg);
+            background: linear-gradient(155deg, #edf3ff 0%, #f8fbff 44%, #edf3ff 100%);
             line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
         }
 
         .container {
-            max-width: 1240px;
-            margin: 34px auto;
+            max-width: 860px;
+            margin: 34px auto 44px;
             padding: 0 20px;
         }
 
-        .layout {
-            display: block;
+        .liquid-background {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .liquid-background::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(46rem 28rem at 12% 12%, rgba(96, 165, 250, 0.28), transparent 72%),
+                radial-gradient(40rem 24rem at 88% 18%, rgba(125, 211, 252, 0.28), transparent 74%),
+                radial-gradient(34rem 20rem at 50% 88%, rgba(196, 181, 253, 0.26), transparent 72%);
+            filter: blur(6px);
+        }
+
+        .liquid-background::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(
+                120deg,
+                rgba(148, 163, 184, 0.04) 0,
+                rgba(148, 163, 184, 0.04) 1px,
+                transparent 1px,
+                transparent 38px
+            );
+            opacity: 0.35;
+        }
+
+        .glass-orb {
+            position: absolute;
+            border-radius: 999px;
+            filter: blur(2px);
+            opacity: 0.58;
+            animation: liquidFloat 14s ease-in-out infinite;
+        }
+
+        .glass-orb.orb-a {
+            top: -8%;
+            left: -7%;
+            width: 360px;
+            height: 360px;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.84), rgba(96, 165, 250, 0.52) 64%, rgba(59, 130, 246, 0.12) 100%);
+        }
+
+        .glass-orb.orb-b {
+            top: 14%;
+            right: -8%;
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle at 42% 30%, rgba(255, 255, 255, 0.82), rgba(125, 211, 252, 0.5) 62%, rgba(14, 165, 233, 0.14) 100%);
+            animation-duration: 18s;
+            animation-delay: -3s;
+        }
+
+        .glass-orb.orb-c {
+            bottom: -14%;
+            left: 24%;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle at 52% 38%, rgba(255, 255, 255, 0.86), rgba(196, 181, 253, 0.56) 65%, rgba(129, 140, 248, 0.15) 100%);
+            animation-duration: 16s;
+        }
+
+        .glass-orb.orb-d {
+            top: 46%;
+            left: 6%;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle at 46% 34%, rgba(255, 255, 255, 0.78), rgba(147, 197, 253, 0.48) 62%, rgba(59, 130, 246, 0.11) 100%);
+            animation-duration: 19s;
+            animation-delay: -5s;
         }
 
         .resume {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 18px;
-            padding: 28px;
-            box-shadow: 0 16px 45px rgba(15, 23, 42, 0.08);
+            background: linear-gradient(155deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 252, 255, 0.6) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.82);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow:
+                0 24px 55px rgba(15, 23, 42, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(22px) saturate(125%);
+            -webkit-backdrop-filter: blur(22px) saturate(125%);
             position: relative;
             overflow: hidden;
         }
@@ -72,24 +150,15 @@
             }
         }
 
-        @keyframes drift {
+        @keyframes liquidFloat {
             0% {
-                transform: translateY(0) scale(1);
+                transform: translate3d(0, 0, 0) scale(1);
             }
             50% {
-                transform: translateY(-12px) scale(1.02);
+                transform: translate3d(0, -26px, 0) scale(1.05);
             }
             100% {
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes rotateSlow {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
+                transform: translate3d(0, 0, 0) scale(1);
             }
         }
 
@@ -379,172 +448,10 @@
             padding: 10px 12px;
         }
 
-        .art-panel {
-            display: none;
-        }
-
-        @media (min-width: 1024px) {
-            .layout {
-                display: grid;
-                grid-template-columns: minmax(640px, 760px) minmax(290px, 1fr);
-                gap: 24px;
-                align-items: start;
-            }
-
-            .art-panel {
-                display: block;
-                position: sticky;
-                top: 30px;
-                min-height: 760px;
-                border-radius: 22px;
-                overflow: hidden;
-                background:
-                    radial-gradient(500px 220px at 8% -6%, rgba(191, 219, 254, 0.48), transparent 60%),
-                    linear-gradient(180deg, rgba(219, 234, 254, 0.74) 0%, rgba(239, 246, 255, 0.82) 44%, rgba(248, 250, 252, 0.95) 100%);
-                border: 1px solid rgba(147, 197, 253, 0.55);
-                box-shadow: 0 24px 60px rgba(30, 64, 175, 0.12);
-            }
-
-            .art-panel::before {
-                content: "";
-                position: absolute;
-                inset: 0;
-                background-image:
-                    repeating-linear-gradient(
-                        120deg,
-                        rgba(148, 163, 184, 0.06) 0,
-                        rgba(148, 163, 184, 0.06) 1px,
-                        transparent 1px,
-                        transparent 32px
-                    );
-            }
-
-            .art-panel::after {
-                content: "";
-                position: absolute;
-                inset: 0;
-                background: linear-gradient(180deg, rgba(255, 255, 255, 0) 52%, rgba(255, 255, 255, 0.35) 100%);
-                pointer-events: none;
-            }
-
-            .parallax-layer {
-                position: absolute;
-                inset: 0;
-                pointer-events: none;
-                will-change: transform;
-                transform: translate3d(0, 0, 0);
-            }
-
-            .deco-blob {
-                position: absolute;
-                border-radius: 999px;
-                filter: blur(0.4px);
-                animation: drift 8s ease-in-out infinite;
-            }
-
-            .blob-a {
-                top: 8%;
-                left: 8%;
-                width: 220px;
-                height: 220px;
-                background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), rgba(147, 197, 253, 0.5) 58%, rgba(59, 130, 246, 0.16) 100%);
-            }
-
-            .blob-b {
-                top: 34%;
-                right: 6%;
-                width: 180px;
-                height: 180px;
-                background: radial-gradient(circle at 42% 32%, rgba(255, 255, 255, 0.9), rgba(125, 211, 252, 0.52) 60%, rgba(14, 165, 233, 0.16) 100%);
-                animation-duration: 10s;
-            }
-
-            .blob-c {
-                bottom: 8%;
-                left: 18%;
-                width: 240px;
-                height: 240px;
-                background: radial-gradient(circle at 48% 34%, rgba(255, 255, 255, 0.92), rgba(196, 181, 253, 0.58) 62%, rgba(129, 140, 248, 0.16) 100%);
-                animation-duration: 9s;
-            }
-
-            .deco-ring {
-                position: absolute;
-                border-radius: 50%;
-                border: 1.5px solid rgba(37, 99, 235, 0.32);
-                animation: rotateSlow 28s linear infinite;
-            }
-
-            .ring-a {
-                width: 320px;
-                height: 320px;
-                top: 18%;
-                left: 20%;
-            }
-
-            .ring-b {
-                width: 190px;
-                height: 190px;
-                bottom: 14%;
-                right: 18%;
-                border-color: rgba(14, 165, 233, 0.38);
-                animation-duration: 19s;
-                animation-direction: reverse;
-            }
-
-            .deco-card {
-                position: absolute;
-                right: 10%;
-                bottom: 11%;
-                width: 205px;
-                padding: 14px 16px;
-                border-radius: 16px;
-                border: 1px solid rgba(148, 163, 184, 0.32);
-                background: rgba(255, 255, 255, 0.58);
-                backdrop-filter: blur(6px);
-                box-shadow: 0 12px 26px rgba(59, 130, 246, 0.14);
-                color: rgba(30, 64, 175, 0.76);
-                font-size: 0.78rem;
-                line-height: 1.45;
-                letter-spacing: 0.02em;
-                animation: drift 7s ease-in-out infinite;
-            }
-
-            .deco-card strong {
-                display: block;
-                margin-bottom: 4px;
-                font-size: 0.9rem;
-            }
-
-            .deco-stars {
-                position: absolute;
-                inset: 0;
-            }
-
-            .deco-stars span {
-                position: absolute;
-                width: 4px;
-                height: 4px;
-                border-radius: 50%;
-                background: rgba(59, 130, 246, 0.58);
-                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
-                animation: drift 6s ease-in-out infinite;
-            }
-
-            .deco-stars span:nth-child(1) { top: 18%; right: 28%; }
-            .deco-stars span:nth-child(2) { top: 30%; left: 24%; animation-duration: 7.5s; }
-            .deco-stars span:nth-child(3) { top: 58%; right: 18%; animation-duration: 8.2s; }
-            .deco-stars span:nth-child(4) { bottom: 20%; left: 30%; animation-duration: 6.6s; }
-            .deco-stars span:nth-child(5) { bottom: 38%; right: 40%; animation-duration: 7.9s; }
-        }
-
         @media (prefers-reduced-motion: reduce) {
             .skeleton,
             .resume.ready .reveal,
-            .deco-blob,
-            .deco-ring,
-            .deco-card,
-            .deco-stars span {
+            .glass-orb {
                 animation: none !important;
             }
 
@@ -554,9 +461,30 @@
         }
 
         @media (max-width: 640px) {
+            .container {
+                margin-top: 20px;
+            }
+
             .resume {
                 padding: 22px;
                 border-radius: 14px;
+            }
+
+            .glass-orb {
+                opacity: 0.42;
+                filter: blur(3px);
+            }
+
+            .glass-orb.orb-a,
+            .glass-orb.orb-b {
+                width: 260px;
+                height: 260px;
+            }
+
+            .glass-orb.orb-c {
+                width: 300px;
+                height: 300px;
+                left: 10%;
             }
 
             h1 {
@@ -570,112 +498,87 @@
     </style>
 </head>
 <body>
+    <div class="liquid-background" aria-hidden="true">
+        <span class="glass-orb orb-a"></span>
+        <span class="glass-orb orb-b"></span>
+        <span class="glass-orb orb-c"></span>
+        <span class="glass-orb orb-d"></span>
+    </div>
     <main class="container">
-        <div class="layout">
-            <article class="resume loading" id="resumeRoot">
-                <header class="header reveal">
-                    <div>
-                        <h1 id="name" class="skeleton skeleton-title"></h1>
-                        <p class="role skeleton skeleton-line short" id="title"></p>
-                    </div>
-                    <div class="actions">
-                        <button id="toggleLanguage" class="icon-btn lang-btn" type="button" title="Switch to English" aria-label="Переключить язык на английский" data-no-translate>
-                            EN
-                        </button>
-                        <button id="downloadPdf" class="icon-btn" type="button" title="Скачать PDF" aria-label="Скачать резюме в PDF" data-no-translate>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M12 3V14M12 14L7.5 9.5M12 14L16.5 9.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
-                                <path d="M5 16.5V18.2C5 19.1941 5.80589 20 6.8 20H17.2C18.1941 20 19 19.1941 19 18.2V16.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </header>
-                <ul class="contacts is-skeleton reveal" id="contacts">
-                    <li class="skeleton skeleton-pill"></li>
-                    <li class="skeleton skeleton-pill"></li>
-                    <li class="skeleton skeleton-pill"></li>
-                    <li class="skeleton skeleton-pill"></li>
+        <article class="resume loading" id="resumeRoot">
+            <header class="header reveal">
+                <div>
+                    <h1 id="name" class="skeleton skeleton-title"></h1>
+                    <p class="role skeleton skeleton-line short" id="title"></p>
+                </div>
+                <div class="actions">
+                    <button id="toggleLanguage" class="icon-btn lang-btn" type="button" title="Switch to English" aria-label="Переключить язык на английский" data-no-translate>
+                        EN
+                    </button>
+                    <button id="downloadPdf" class="icon-btn" type="button" title="Скачать PDF" aria-label="Скачать резюме в PDF" data-no-translate>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 3V14M12 14L7.5 9.5M12 14L16.5 9.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M5 16.5V18.2C5 19.1941 5.80589 20 6.8 20H17.2C18.1941 20 19 19.1941 19 18.2V16.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+            <ul class="contacts is-skeleton reveal" id="contacts">
+                <li class="skeleton skeleton-pill"></li>
+                <li class="skeleton skeleton-pill"></li>
+                <li class="skeleton skeleton-pill"></li>
+                <li class="skeleton skeleton-pill"></li>
+            </ul>
+
+            <section class="reveal">
+                <h2>О себе</h2>
+                <p id="summary" class="skeleton skeleton-line"></p>
+            </section>
+
+            <section class="reveal">
+                <h2>Ключевые навыки</h2>
+                <ul class="skills is-skeleton" id="skills">
+                    <li class="skeleton skeleton-line"></li>
+                    <li class="skeleton skeleton-line"></li>
+                    <li class="skeleton skeleton-line"></li>
+                    <li class="skeleton skeleton-line"></li>
                 </ul>
+            </section>
 
-                <section class="reveal">
-                    <h2>О себе</h2>
-                    <p id="summary" class="skeleton skeleton-line"></p>
-                </section>
+            <section class="reveal">
+                <h2>Опыт работы</h2>
+                <ul class="timeline is-skeleton" id="experience">
+                    <li>
+                        <span class="skeleton skeleton-line"></span>
+                        <span class="skeleton skeleton-line"></span>
+                    </li>
+                    <li>
+                        <span class="skeleton skeleton-line"></span>
+                        <span class="skeleton skeleton-line"></span>
+                    </li>
+                </ul>
+            </section>
 
-                <section class="reveal">
-                    <h2>Ключевые навыки</h2>
-                    <ul class="skills is-skeleton" id="skills">
-                        <li class="skeleton skeleton-line"></li>
-                        <li class="skeleton skeleton-line"></li>
-                        <li class="skeleton skeleton-line"></li>
-                        <li class="skeleton skeleton-line"></li>
-                    </ul>
-                </section>
+            <section class="reveal">
+                <h2>Образование</h2>
+                <ul class="timeline is-skeleton" id="education">
+                    <li>
+                        <span class="skeleton skeleton-line"></span>
+                        <span class="skeleton skeleton-line"></span>
+                    </li>
+                </ul>
+            </section>
 
-                <section class="reveal">
-                    <h2>Опыт работы</h2>
-                    <ul class="timeline is-skeleton" id="experience">
-                        <li>
-                            <span class="skeleton skeleton-line"></span>
-                            <span class="skeleton skeleton-line"></span>
-                        </li>
-                        <li>
-                            <span class="skeleton skeleton-line"></span>
-                            <span class="skeleton skeleton-line"></span>
-                        </li>
-                    </ul>
-                </section>
-
-                <section class="reveal">
-                    <h2>Образование</h2>
-                    <ul class="timeline is-skeleton" id="education">
-                        <li>
-                            <span class="skeleton skeleton-line"></span>
-                            <span class="skeleton skeleton-line"></span>
-                        </li>
-                    </ul>
-                </section>
-
-                <section class="reveal">
-                    <h2>Сертификаты</h2>
-                    <ul class="timeline is-skeleton" id="certifications">
-                        <li>
-                            <span class="skeleton skeleton-line"></span>
-                            <span class="skeleton skeleton-line"></span>
-                        </li>
-                    </ul>
-                </section>
-            </article>
-
-            <aside id="decorPanel" class="art-panel" aria-hidden="true">
-                <div class="parallax-layer" data-parallax="0.36">
-                    <div class="deco-blob blob-a"></div>
-                </div>
-                <div class="parallax-layer" data-parallax="-0.22">
-                    <div class="deco-blob blob-b"></div>
-                </div>
-                <div class="parallax-layer" data-parallax="0.2">
-                    <div class="deco-blob blob-c"></div>
-                </div>
-                <div class="parallax-layer" data-parallax="0.13">
-                    <div class="deco-ring ring-a"></div>
-                    <div class="deco-ring ring-b"></div>
-                </div>
-                <div class="parallax-layer" data-parallax="0.26">
-                    <div class="deco-card">
-                        <strong>Quality First</strong>
-                        Тестирование как дизайн надежности: аккуратно, быстро, предсказуемо.
-                    </div>
-                </div>
-                <div class="parallax-layer deco-stars" data-parallax="0.17">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </aside>
-        </div>
+            <section class="reveal">
+                <h2>Сертификаты</h2>
+                <ul class="timeline is-skeleton" id="certifications">
+                    <li>
+                        <span class="skeleton skeleton-line"></span>
+                        <span class="skeleton skeleton-line"></span>
+                    </li>
+                </ul>
+            </section>
+        </article>
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -686,15 +589,6 @@
         let baseTitle = "QA Engineer Resume";
         const originalTextByNode = new Map();
         const translatedCache = new Map();
-        const decorPanel = document.getElementById("decorPanel");
-        const parallaxLayers = decorPanel ? [...decorPanel.querySelectorAll(".parallax-layer")] : [];
-        const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-        let pointerOffsetX = 0;
-        let pointerOffsetY = 0;
-        let scrollOffsetY = 0;
-        let currentParallaxX = 0;
-        let currentParallaxY = 0;
-        let parallaxFrame = null;
 
         function createTimelineItem(item) {
             const li = document.createElement("li");
@@ -766,80 +660,6 @@
                 root.classList.remove("loading");
                 root.classList.add("ready");
             });
-        }
-
-        function queueParallaxFrame() {
-            if (parallaxFrame || reducedMotionQuery.matches || !parallaxLayers.length) {
-                return;
-            }
-            parallaxFrame = requestAnimationFrame(applyParallax);
-        }
-
-        function applyParallax() {
-            const targetX = pointerOffsetX;
-            const targetY = pointerOffsetY + scrollOffsetY;
-
-            currentParallaxX += (targetX - currentParallaxX) * 0.12;
-            currentParallaxY += (targetY - currentParallaxY) * 0.12;
-
-            parallaxLayers.forEach((layer) => {
-                const speed = Number(layer.dataset.parallax || 0);
-                layer.style.transform = `translate3d(${(currentParallaxX * speed).toFixed(2)}px, ${(currentParallaxY * speed).toFixed(2)}px, 0)`;
-            });
-
-            const needsMoreFrames =
-                Math.abs(targetX - currentParallaxX) > 0.08 ||
-                Math.abs(targetY - currentParallaxY) > 0.08;
-
-            if (needsMoreFrames) {
-                parallaxFrame = requestAnimationFrame(applyParallax);
-            } else {
-                parallaxFrame = null;
-            }
-        }
-
-        function handlePanelPointerMove(event) {
-            if (!decorPanel || reducedMotionQuery.matches) {
-                return;
-            }
-
-            const rect = decorPanel.getBoundingClientRect();
-            const normalizedX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-            const normalizedY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
-            pointerOffsetX = Math.max(-22, Math.min(22, normalizedX * 22));
-            pointerOffsetY = Math.max(-18, Math.min(18, normalizedY * 18));
-            queueParallaxFrame();
-        }
-
-        function handlePanelPointerLeave() {
-            pointerOffsetX = 0;
-            pointerOffsetY = 0;
-            queueParallaxFrame();
-        }
-
-        function handlePanelScrollParallax() {
-            if (!decorPanel || reducedMotionQuery.matches) {
-                return;
-            }
-
-            const rect = decorPanel.getBoundingClientRect();
-            const viewportCenter = window.innerHeight / 2;
-            const panelCenter = rect.top + rect.height / 2;
-            const offset = (viewportCenter - panelCenter) / window.innerHeight;
-            scrollOffsetY = Math.max(-12, Math.min(12, offset * 30));
-            queueParallaxFrame();
-        }
-
-        function initDecorPanelEffects() {
-            if (!decorPanel || reducedMotionQuery.matches) {
-                return;
-            }
-
-            decorPanel.addEventListener("pointermove", handlePanelPointerMove);
-            decorPanel.addEventListener("pointerleave", handlePanelPointerLeave);
-            window.addEventListener("scroll", handlePanelScrollParallax, { passive: true });
-            window.addEventListener("resize", handlePanelScrollParallax);
-            handlePanelScrollParallax();
         }
 
         function shouldTranslateNode(node) {
@@ -1068,7 +888,6 @@
             const next = currentLanguage === "ru" ? "en" : "ru";
             setLanguage(next);
         });
-        initDecorPanelEffects();
 
         loadResume()
             .then(renderResume)
