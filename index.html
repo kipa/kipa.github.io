@@ -59,6 +59,17 @@
             padding: 0 20px;
         }
 
+        body.compact-layout .container {
+            min-height: 100vh;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        body.compact-layout .resume {
+            width: 100%;
+        }
+
         .liquid-background {
             position: fixed;
             inset: 0;
@@ -891,6 +902,17 @@
             .actions.open {
                 display: flex;
             }
+
+            .contacts {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .contacts li + li::before {
+                content: none;
+                margin: 0;
+            }
         }
 
         @media (hover: none), (pointer: coarse) {
@@ -1383,6 +1405,7 @@
         function applyInformationDensity(meta) {
             resumeInfoLevel = resolveInfoLevel(meta?.infoLevel);
             const hideExtendedSections = resumeInfoLevel === 0;
+            document.body.classList.toggle("compact-layout", hideExtendedSections);
 
             FULL_RESUME_SECTION_IDS.forEach((sectionId) => {
                 const section = document.getElementById(sectionId);
