@@ -205,6 +205,12 @@
             }
         }
 
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         .resume::before {
             content: "";
             position: absolute;
@@ -488,6 +494,33 @@
             font-size: 0.78rem;
             font-weight: 700;
             letter-spacing: 0.03em;
+            position: relative;
+        }
+
+        .lang-btn .lang-label {
+            line-height: 1;
+            transition: opacity 0.12s ease;
+        }
+
+        .lang-btn .lang-loader {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 1.7px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            opacity: 0;
+            animation: spin 0.72s linear infinite;
+            transition: opacity 0.12s ease;
+            pointer-events: none;
+        }
+
+        .lang-btn.is-loading .lang-label {
+            opacity: 0;
+        }
+
+        .lang-btn.is-loading .lang-loader {
+            opacity: 1;
         }
 
         .contacts {
@@ -900,7 +933,8 @@
                             </svg>
                         </a>
                         <button id="toggleLanguage" class="icon-btn lang-btn" type="button" aria-label="Переключить язык на английский">
-                            EN
+                            <span class="lang-label">EN</span>
+                            <span class="lang-loader" aria-hidden="true"></span>
                         </button>
                         <button id="downloadPdf" class="icon-btn" type="button" aria-label="Скачать резюме в PDF">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -1262,6 +1296,28 @@
             }
         }
 
+        function setLanguageButtonText(button, value) {
+            if (!button) {
+                return;
+            }
+
+            const label = button.querySelector(".lang-label");
+            if (label) {
+                label.textContent = value;
+                return;
+            }
+            button.textContent = value;
+        }
+
+        function setLanguageButtonLoading(button, isLoading) {
+            if (!button) {
+                return;
+            }
+
+            button.classList.toggle("is-loading", Boolean(isLoading));
+            button.setAttribute("aria-busy", isLoading ? "true" : "false");
+        }
+
         function updateCursorTooltipPosition() {
             if (!cursorTooltip || !activeTooltipTarget) {
                 return;
@@ -1587,6 +1643,7 @@
 
             const languageButton = document.getElementById("toggleLanguage");
             isTranslating = true;
+            setLanguageButtonLoading(languageButton, true);
             languageButton.disabled = true;
 
             try {
@@ -1596,7 +1653,7 @@
                     }
                     document.title = baseTitle;
                     document.documentElement.lang = "ru";
-                    languageButton.textContent = "EN";
+                    setLanguageButtonText(languageButton, "EN");
                     setTooltipText(languageButton, buttonTooltips.languageToEn);
                     languageButton.setAttribute("aria-label", "Переключить язык на английский");
                     currentLanguage = "ru";
@@ -1623,12 +1680,13 @@
 
                 document.title = await translateText(baseTitle, "en");
                 document.documentElement.lang = "en";
-                languageButton.textContent = "RU";
+                setLanguageButtonText(languageButton, "RU");
                 setTooltipText(languageButton, buttonTooltips.languageToRu);
                 languageButton.setAttribute("aria-label", "Switch language to Russian");
                 currentLanguage = "en";
             } finally {
                 languageButton.disabled = false;
+                setLanguageButtonLoading(languageButton, false);
                 isTranslating = false;
             }
         }
