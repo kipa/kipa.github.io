@@ -41,7 +41,7 @@
   },
   "profile": {
     "name": "Кирилл Павлов",
-    "title": "Senior QA Engineer",
+    "title": "Lead QA",
     "photo": "./profile-photo.jpg",
     "photoThumbnail": "./profile-photo.jpg",
     "photoModal": "./profile-photo-expanded.jpg",
@@ -56,26 +56,33 @@
       "href": "https://kipavlo.t.me/",
       "tooltip": {
         "ru": "Написать в Telegram",
-        "en": "Open Telegram"
+        "en": "Write message in Telegram"
       }
     },
     {
-      "label": "kipavlo@yahoo.com",
-      "href": "mailto:kipavlo@yahoo.com",
+      "label": "kipavlowork@gmail.com",
+      "href": "mailto:kipavlowork@gmail.com",
       "tooltip": {
-        "ru": "Отправить Email",
+        "ru": "Отправить email",
         "en": "Send email"
       }
     }
+    { "label": "kipavlo.t.me", "href": "https://kipavlo.t.me/", "tooltip": "Написать в Telegram" },
+    { "label": "kipavlowork@gmail.com", "href": "mailto:kipavlowork@gmail.com", "tooltip": "Отправить Email" }
   ],
   "skills": [
     "API-тестирование: Postman, Bruno, Swagger, Charles Proxy",
-    "Автотесты: Playwright, Selenium, Python, Pytest",
-    "CI/CD и качество релиза: Gitlab CI, GitHub Actions, отчеты Allure",
+    "Автоматизация тестирования: Python, Pytest, Playwright, Selenium",
+    "CI/CD и качество релиза: Gitlab CI, GitHub Actions, Jenkins, Allure",
+    "UX/UI дизайн и прототипирование: Figma, Sketch, пакет Adobe (включая XD)",
+    "Ручное и автоматизированное тестирование BPM-систем (BPMSoft)",
+    "Работа с документацией: Confluence, TestIT, TestRail",
+    "UX-анализ и оптимизация решений в процессе тестирования",
     "SQL и валидация данных в MSSQL, PostgreSQL",
     "Работа в Agile-командах, менторство QA",
     "Внедрение AI в автоматизацию тестирования",
-    "Нагрузочное тестирование Locust, JMeter"
+    "Нагрузочное тестирование Locust, JMeter",
+    "Тестирование хранилищ DWH"
   ],
   "experience": [
     {
