@@ -66,9 +66,15 @@
         "ru": "Отправить email",
         "en": "Send email"
       }
+    },
+    {
+      "label": "linkedin.com/in/kipavlo/",
+      "href": "https://www.linkedin.com/in/kipavlo/",
+      "tooltip": {
+        "ru": "Профиль на LinkedIn",
+        "en": "LinkedIn profile"
+      }
     }
-    { "label": "kipavlo.t.me", "href": "https://kipavlo.t.me/", "tooltip": "Написать в Telegram" },
-    { "label": "kipavlowork@gmail.com", "href": "mailto:kipavlowork@gmail.com", "tooltip": "Отправить Email" }
   ],
   "skills": [
     "API-тестирование: Postman, Bruno, Swagger, Charles Proxy",
