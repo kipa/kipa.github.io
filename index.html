@@ -422,6 +422,20 @@
             font-weight: 700;
         }
 
+        .status-company-link {
+            color: inherit;
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 2px;
+            text-decoration-color: rgba(37, 99, 235, 0.5);
+            transition: text-decoration-color 0.16s ease, color 0.16s ease;
+        }
+
+        .status-company-link:hover {
+            color: #1d4ed8;
+            text-decoration-color: currentColor;
+        }
+
         .status-skeleton {
             width: min(210px, 70%);
             height: 14px;
@@ -1075,6 +1089,7 @@
         function renderCurrentStatus(profile) {
             const status = document.getElementById("currentStatus");
             const company = typeof profile?.currentCompany === "string" ? profile.currentCompany.trim() : "";
+            const companyUrl = typeof profile?.currentCompanyUrl === "string" ? profile.currentCompanyUrl.trim() : "";
 
             status.innerHTML = "";
             status.classList.remove("hidden");
@@ -1088,9 +1103,16 @@
             dot.className = "status-dot";
             status.appendChild(dot);
 
-            const label = document.createElement("span");
-            label.className = "status-company";
+            const isAbsoluteLink = /^https?:\/\//i.test(companyUrl);
+            const label = document.createElement(isAbsoluteLink ? "a" : "span");
+            label.className = `status-company${isAbsoluteLink ? " status-company-link" : ""}`;
             label.textContent = company;
+            if (isAbsoluteLink) {
+                label.href = companyUrl;
+                label.target = "_blank";
+                label.rel = "noopener noreferrer";
+                label.setAttribute("aria-label", `Открыть сайт компании ${company}`);
+            }
             status.appendChild(label);
         }
 

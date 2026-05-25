@@ -48,7 +48,7 @@
 ## Структура данных
 
 - `meta.pageTitle` — заголовок страницы в браузере
-- `profile` — имя, должность, фото (`profile.photo`), отдельные фото для миниатюры/модалки (`profile.photoThumbnail`, `profile.photoModal`), Telegram (`profile.telegram`) и текущая компания (`profile.currentCompany`)
+- `profile` — имя, должность, фото (`profile.photo`), отдельные фото для миниатюры/модалки (`profile.photoThumbnail`, `profile.photoModal`), Telegram (`profile.telegram`), текущая компания (`profile.currentCompany`) и ссылка на сайт компании в статусе (`profile.currentCompanyUrl`)
 - `summary` — краткое описание
 - `tooltips.buttons` — подписи тултипов для кнопок интерфейса (фото, Telegram, язык, PDF, меню, закрытие модалки)
 - `contacts[]` — контакты (`label`, опционально `href`, опционально `tooltip` для текста тултипа)
