@@ -647,6 +647,20 @@
             font-size: 0.92rem;
         }
 
+        .timeline .meta a {
+            color: inherit;
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 2px;
+            text-decoration-color: rgba(100, 116, 139, 0.62);
+            transition: color 0.16s ease, text-decoration-color 0.16s ease;
+        }
+
+        .timeline .meta a:hover {
+            color: #1d4ed8;
+            text-decoration-color: currentColor;
+        }
+
         .timeline .description {
             margin: 0;
             color: #1f2937;
@@ -1013,9 +1027,33 @@
 
             const meta = document.createElement("p");
             meta.className = "meta";
-            meta.textContent = [item.company || item.school || item.issuer, item.period]
-                .filter(Boolean)
-                .join(" - ");
+            const orgName = item.company || item.school || item.issuer || "";
+            const isCompanyEntry = Boolean(item.company);
+            const orgUrl = isCompanyEntry && typeof item.companyUrl === "string"
+                ? item.companyUrl.trim()
+                : "";
+            const hasValidOrgUrl = /^https?:\/\//i.test(orgUrl);
+
+            if (orgName) {
+                if (hasValidOrgUrl) {
+                    const orgLink = document.createElement("a");
+                    orgLink.href = orgUrl;
+                    orgLink.target = "_blank";
+                    orgLink.rel = "noopener noreferrer";
+                    orgLink.textContent = orgName;
+                    orgLink.setAttribute("aria-label", `Открыть сайт компании ${orgName}`);
+                    meta.appendChild(orgLink);
+                } else {
+                    meta.append(orgName);
+                }
+            }
+
+            if (item.period) {
+                if (orgName) {
+                    meta.append(" - ");
+                }
+                meta.append(item.period);
+            }
             li.appendChild(meta);
 
             if (item.description) {

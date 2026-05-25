@@ -42,12 +42,14 @@
     {
       "position": "Senior QA Engineer",
       "company": "FinTech Platform",
+      "companyUrl": "https://example.com/fintech-platform",
       "period": "2022 - настоящее время",
       "description": "Разработал стратегию тестирования для 4 продуктовых команд, внедрил smoke/regression-пайплайны и сократил количество критичных дефектов в проде на 35%."
     },
     {
       "position": "QA Engineer",
       "company": "E-commerce Company",
+      "companyUrl": "https://example.com/ecommerce-company",
       "period": "2019 - 2022",
       "description": "Покрыл автотестами ключевые пользовательские потоки checkout и личного кабинета, что сократило время регрессии с 2 дней до 4 часов."
     }
