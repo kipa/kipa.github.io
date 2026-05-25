@@ -248,7 +248,7 @@
 
         .skeleton-title {
             height: 38px;
-            width: min(72%, 340px);
+            width: min(92%, 460px);
         }
 
         .skeleton-line {
@@ -257,7 +257,7 @@
         }
 
         .skeleton-line.short {
-            width: 62%;
+            width: 84%;
         }
 
         .skeleton-pill {
@@ -324,9 +324,9 @@
             position: absolute;
             inset: 0;
             border-radius: inherit;
-            background: linear-gradient(90deg, #e5e7eb 20%, #dbeafe 50%, #e5e7eb 80%);
+            background: linear-gradient(90deg, #eef2ff 20%, #dbeafe 50%, #eef2ff 80%);
             background-size: 220% 100%;
-            animation: shimmer 1.2s linear infinite;
+            animation: shimmer 1.4s linear infinite;
             z-index: 1;
         }
 
@@ -388,6 +388,10 @@
             margin: 0;
             color: var(--muted);
             font-size: 0.92rem;
+        }
+
+        .role.skeleton-line.short {
+            width: min(88%, 340px);
         }
 
         .role-row {
@@ -573,6 +577,10 @@
         .contacts span:hover {
             color: #0f172a;
             text-decoration-color: rgba(15, 23, 42, 0.7);
+        }
+
+        .compact-hidden {
+            display: none !important;
         }
 
         .cursor-tooltip {
@@ -952,12 +960,12 @@
                 <li class="skeleton skeleton-pill"></li>
             </ul>
 
-            <section class="reveal">
+            <section id="summarySection" class="reveal">
                 <h2>О себе</h2>
                 <p id="summary" class="skeleton skeleton-line"></p>
             </section>
 
-            <section class="reveal">
+            <section id="skillsSection" class="reveal">
                 <h2>Ключевые навыки</h2>
                 <ul class="skills is-skeleton" id="skills">
                     <li class="skeleton skeleton-line"></li>
@@ -967,7 +975,7 @@
                 </ul>
             </section>
 
-            <section class="reveal">
+            <section id="experienceSection" class="reveal">
                 <h2>Опыт работы</h2>
                 <ul class="timeline is-skeleton" id="experience">
                     <li>
@@ -981,7 +989,7 @@
                 </ul>
             </section>
 
-            <section class="reveal">
+            <section id="educationSection" class="reveal">
                 <h2>Образование</h2>
                 <ul class="timeline is-skeleton" id="education">
                     <li>
@@ -991,7 +999,7 @@
                 </ul>
             </section>
 
-            <section class="reveal">
+            <section id="certificationsSection" class="reveal">
                 <h2>Сертификаты</h2>
                 <ul class="timeline is-skeleton" id="certifications">
                     <li>
@@ -1036,18 +1044,27 @@
         const actionsPanel = document.getElementById("actionsPanel");
         const cursorTooltip = document.getElementById("cursorTooltip");
         const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+        const FULL_RESUME_SECTION_IDS = [
+            "skillsSection",
+            "experienceSection",
+            "educationSection",
+            "certificationsSection"
+        ];
         const DEFAULT_BUTTON_TOOLTIPS = {
-            profilePhoto: "Открыть фото",
-            actionsMenu: "Открыть меню",
-            telegram: "Открыть Telegram",
-            languageToEn: "Switch to English",
-            languageToRu: "Switch to Russian",
-            downloadPdf: "Скачать PDF",
+            profilePhoto: { ru: "Открыть фото", en: "Open photo" },
+            actionsMenu: { ru: "Открыть меню", en: "Open menu" },
+            telegram: { ru: "Открыть Telegram", en: "Open Telegram" },
+            languageToEn: { ru: "Переключить на английский", en: "Switch to English" },
+            languageToRu: { ru: "Переключить на русский", en: "Switch to Russian" },
+            downloadPdf: { ru: "Скачать PDF", en: "Download PDF" },
+            downloadPdfLoading: { ru: "Генерация PDF...", en: "Generating PDF..." },
+            closePhoto: { ru: "Закрыть фото", en: "Close photo" },
+            // Legacy fallback keys for older resume.json versions.
             downloadPdfLoadingRu: "Генерация PDF...",
-            downloadPdfLoadingEn: "Generating PDF...",
-            closePhoto: "Закрыть фото"
+            downloadPdfLoadingEn: "Generating PDF..."
         };
         let buttonTooltips = { ...DEFAULT_BUTTON_TOOLTIPS };
+        let resumeInfoLevel = 1;
         let activeTooltipTarget = null;
         let tooltipPointerX = 0;
         let tooltipPointerY = 0;
@@ -1113,18 +1130,12 @@
                     link.textContent = contact.label;
                     link.target = "_blank";
                     link.rel = "noopener noreferrer";
-                    const tooltipText = typeof contact?.tooltip === "string" && contact.tooltip.trim()
-                        ? contact.tooltip.trim()
-                        : contact.label;
-                    setTooltipText(link, tooltipText);
+                    setContactTooltipSource(link, contact);
                     item.appendChild(link);
                 } else {
                     const text = document.createElement("span");
                     text.textContent = contact.label;
-                    const tooltipText = typeof contact?.tooltip === "string" && contact.tooltip.trim()
-                        ? contact.tooltip.trim()
-                        : contact.label;
-                    setTooltipText(text, tooltipText);
+                    setContactTooltipSource(text, contact);
                     item.appendChild(text);
                 }
                 contactsList.appendChild(item);
@@ -1244,36 +1255,149 @@
 
             telegramLink.href = target;
             telegramLink.classList.remove("hidden-link");
-            setTooltipText(telegramLink, buttonTooltips.telegram);
+            setTooltipText(telegramLink, getButtonTooltipText("telegram"));
         }
 
-        function getTooltipOverride(overrides, key) {
-            const value = overrides?.[key];
-            return typeof value === "string" && value.trim() ? value.trim() : "";
+        function resolveLocalizedText(value, language, fallbackText = "") {
+            if (typeof value === "string" && value.trim()) {
+                return value.trim();
+            }
+
+            if (value && typeof value === "object") {
+                const direct = value[language];
+                if (typeof direct === "string" && direct.trim()) {
+                    return direct.trim();
+                }
+
+                const fallbackRu = value.ru;
+                if (typeof fallbackRu === "string" && fallbackRu.trim()) {
+                    return fallbackRu.trim();
+                }
+
+                const fallbackEn = value.en;
+                if (typeof fallbackEn === "string" && fallbackEn.trim()) {
+                    return fallbackEn.trim();
+                }
+            }
+
+            return typeof fallbackText === "string" ? fallbackText : "";
+        }
+
+        function getButtonTooltipText(key, language = currentLanguage) {
+            const fallback = resolveLocalizedText(DEFAULT_BUTTON_TOOLTIPS[key], language, "");
+            return resolveLocalizedText(buttonTooltips[key], language, fallback);
+        }
+
+        function getDownloadPdfLoadingTooltip(language = currentLanguage) {
+            const localizedLoading = getButtonTooltipText("downloadPdfLoading", language);
+            if (localizedLoading) {
+                return localizedLoading;
+            }
+
+            if (language === "en") {
+                return getButtonTooltipText("downloadPdfLoadingEn", "en");
+            }
+            return getButtonTooltipText("downloadPdfLoadingRu", "ru");
+        }
+
+        function getContactTooltipText(contact, language) {
+            const label = typeof contact?.label === "string" ? contact.label.trim() : "";
+            const localized = resolveLocalizedText(contact?.tooltip, language, "");
+            if (localized) {
+                return localized;
+            }
+
+            const directLegacy = language === "en" ? contact?.tooltipEn : contact?.tooltipRu;
+            if (typeof directLegacy === "string" && directLegacy.trim()) {
+                return directLegacy.trim();
+            }
+
+            const fallbackLegacy = language === "en" ? contact?.tooltipRu : contact?.tooltipEn;
+            if (typeof fallbackLegacy === "string" && fallbackLegacy.trim()) {
+                return fallbackLegacy.trim();
+            }
+
+            return label;
+        }
+
+        function setContactTooltipSource(target, contact) {
+            if (!target) {
+                return;
+            }
+
+            const tooltipRu = getContactTooltipText(contact, "ru");
+            const tooltipEn = getContactTooltipText(contact, "en");
+            target.dataset.tooltipRu = tooltipRu;
+            target.dataset.tooltipEn = tooltipEn;
+
+            const activeTooltip = currentLanguage === "en"
+                ? (tooltipEn || tooltipRu)
+                : (tooltipRu || tooltipEn);
+            setTooltipText(target, activeTooltip);
+        }
+
+        function refreshContactTooltipsForLanguage() {
+            const contactElements = document.querySelectorAll("#contacts a, #contacts span");
+            contactElements.forEach((element) => {
+                const ruTooltip = element.dataset.tooltipRu || "";
+                const enTooltip = element.dataset.tooltipEn || "";
+                const nextTooltip = currentLanguage === "en"
+                    ? (enTooltip || ruTooltip)
+                    : (ruTooltip || enTooltip);
+                setTooltipText(element, nextTooltip);
+            });
+        }
+
+        function refreshButtonTooltipsForLanguage() {
+            setTooltipText(document.getElementById("profilePhotoButton"), getButtonTooltipText("profilePhoto"));
+            setTooltipText(actionsMenuButton, getButtonTooltipText("actionsMenu"));
+            setTooltipText(document.getElementById("photoModalClose"), getButtonTooltipText("closePhoto"));
+            const telegramLink = document.getElementById("telegramLink");
+            if (telegramLink && !telegramLink.classList.contains("hidden-link")) {
+                setTooltipText(telegramLink, getButtonTooltipText("telegram"));
+            }
+
+            const downloadButton = document.getElementById("downloadPdf");
+            if (resumeInfoLevel === 0 || downloadButton?.classList.contains("compact-hidden")) {
+                setTooltipText(downloadButton, "");
+            } else {
+                setTooltipText(downloadButton, getButtonTooltipText("downloadPdf"));
+            }
+
+            const languageTooltipKey = currentLanguage === "ru" ? "languageToEn" : "languageToRu";
+            setTooltipText(document.getElementById("toggleLanguage"), getButtonTooltipText(languageTooltipKey));
         }
 
         function applyButtonTooltips(tooltipConfig) {
             const overrides = tooltipConfig?.buttons && typeof tooltipConfig.buttons === "object"
                 ? tooltipConfig.buttons
                 : {};
+            buttonTooltips = { ...DEFAULT_BUTTON_TOOLTIPS, ...overrides };
+            refreshButtonTooltipsForLanguage();
+        }
 
-            buttonTooltips = {
-                profilePhoto: getTooltipOverride(overrides, "profilePhoto") || DEFAULT_BUTTON_TOOLTIPS.profilePhoto,
-                actionsMenu: getTooltipOverride(overrides, "actionsMenu") || DEFAULT_BUTTON_TOOLTIPS.actionsMenu,
-                telegram: getTooltipOverride(overrides, "telegram") || DEFAULT_BUTTON_TOOLTIPS.telegram,
-                languageToEn: getTooltipOverride(overrides, "languageToEn") || DEFAULT_BUTTON_TOOLTIPS.languageToEn,
-                languageToRu: getTooltipOverride(overrides, "languageToRu") || DEFAULT_BUTTON_TOOLTIPS.languageToRu,
-                downloadPdf: getTooltipOverride(overrides, "downloadPdf") || DEFAULT_BUTTON_TOOLTIPS.downloadPdf,
-                downloadPdfLoadingRu: getTooltipOverride(overrides, "downloadPdfLoadingRu") || DEFAULT_BUTTON_TOOLTIPS.downloadPdfLoadingRu,
-                downloadPdfLoadingEn: getTooltipOverride(overrides, "downloadPdfLoadingEn") || DEFAULT_BUTTON_TOOLTIPS.downloadPdfLoadingEn,
-                closePhoto: getTooltipOverride(overrides, "closePhoto") || DEFAULT_BUTTON_TOOLTIPS.closePhoto
-            };
+        function resolveInfoLevel(value) {
+            return Number(value) === 0 ? 0 : 1;
+        }
 
-            setTooltipText(document.getElementById("profilePhotoButton"), buttonTooltips.profilePhoto);
-            setTooltipText(actionsMenuButton, buttonTooltips.actionsMenu);
-            setTooltipText(document.getElementById("photoModalClose"), buttonTooltips.closePhoto);
-            setTooltipText(document.getElementById("downloadPdf"), buttonTooltips.downloadPdf);
-            setTooltipText(document.getElementById("toggleLanguage"), currentLanguage === "ru" ? buttonTooltips.languageToEn : buttonTooltips.languageToRu);
+        function applyInformationDensity(meta) {
+            resumeInfoLevel = resolveInfoLevel(meta?.infoLevel);
+            const hideExtendedSections = resumeInfoLevel === 0;
+
+            FULL_RESUME_SECTION_IDS.forEach((sectionId) => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.classList.toggle("compact-hidden", hideExtendedSections);
+                }
+            });
+
+            const downloadButton = document.getElementById("downloadPdf");
+            if (downloadButton) {
+                downloadButton.classList.toggle("compact-hidden", hideExtendedSections);
+                downloadButton.disabled = hideExtendedSections;
+            }
+
+            refreshButtonTooltipsForLanguage();
         }
 
         function setTooltipText(target, text) {
@@ -1654,9 +1778,10 @@
                     document.title = baseTitle;
                     document.documentElement.lang = "ru";
                     setLanguageButtonText(languageButton, "EN");
-                    setTooltipText(languageButton, buttonTooltips.languageToEn);
                     languageButton.setAttribute("aria-label", "Переключить язык на английский");
                     currentLanguage = "ru";
+                    refreshButtonTooltipsForLanguage();
+                    refreshContactTooltipsForLanguage();
                     return;
                 }
 
@@ -1681,9 +1806,10 @@
                 document.title = await translateText(baseTitle, "en");
                 document.documentElement.lang = "en";
                 setLanguageButtonText(languageButton, "RU");
-                setTooltipText(languageButton, buttonTooltips.languageToRu);
                 languageButton.setAttribute("aria-label", "Switch language to Russian");
                 currentLanguage = "en";
+                refreshButtonTooltipsForLanguage();
+                refreshContactTooltipsForLanguage();
             } finally {
                 languageButton.disabled = false;
                 setLanguageButtonLoading(languageButton, false);
@@ -1704,6 +1830,7 @@
             baseTitle = data.meta?.pageTitle || "QA Engineer Resume";
             document.title = baseTitle;
             applyButtonTooltips(data.tooltips || {});
+            applyInformationDensity(data.meta || {});
             setProfilePhoto(data.profile || {});
             setTelegramLink(data.profile || {}, data.contacts || []);
             renderCurrentStatus(data.profile || {});
@@ -1755,15 +1882,17 @@
         }
 
         async function downloadResumePdf() {
-            if (!loadedResume || typeof html2pdf !== "function") {
+            if (!loadedResume || typeof html2pdf !== "function" || resumeInfoLevel === 0) {
                 return;
             }
 
             const button = document.getElementById("downloadPdf");
-            const originalTooltip = button.dataset.tooltip || buttonTooltips.downloadPdf;
-            const loadingTooltip = currentLanguage === "en"
-                ? buttonTooltips.downloadPdfLoadingEn
-                : buttonTooltips.downloadPdfLoadingRu;
+            if (button.classList.contains("compact-hidden")) {
+                return;
+            }
+
+            const originalTooltip = button.dataset.tooltip || getButtonTooltipText("downloadPdf");
+            const loadingTooltip = getDownloadPdfLoadingTooltip(currentLanguage);
             setTooltipText(button, loadingTooltip);
             button.disabled = true;
 

@@ -1,18 +1,42 @@
 {
   "meta": {
-    "pageTitle": "Кирилл Павлов - QA Engineer"
+    "pageTitle": "Кирилл Павлов - QA Engineer",
+    "infoLevel": 1
   },
   "tooltips": {
     "buttons": {
-      "profilePhoto": "Открыть фото",
-      "actionsMenu": "Открыть меню",
-      "telegram": "Написать в Telegram",
-      "languageToEn": "Switch to English",
-      "languageToRu": "Переключить на Русский",
-      "downloadPdf": "Скачать PDF",
-      "downloadPdfLoadingRu": "Генерация PDF...",
-      "downloadPdfLoadingEn": "Generating PDF...",
-      "closePhoto": "Закрыть фото"
+      "profilePhoto": {
+        "ru": "Открыть фото",
+        "en": "Open photo"
+      },
+      "actionsMenu": {
+        "ru": "Открыть меню",
+        "en": "Open menu"
+      },
+      "telegram": {
+        "ru": "Написать в Telegram",
+        "en": "Open Telegram"
+      },
+      "languageToEn": {
+        "ru": "Переключить на английский",
+        "en": "Switch to English"
+      },
+      "languageToRu": {
+        "ru": "Переключить на русский",
+        "en": "Switch to Russian"
+      },
+      "downloadPdf": {
+        "ru": "Скачать PDF",
+        "en": "Download PDF"
+      },
+      "downloadPdfLoading": {
+        "ru": "Генерация PDF...",
+        "en": "Generating PDF..."
+      },
+      "closePhoto": {
+        "ru": "Закрыть фото",
+        "en": "Close photo"
+      }
     }
   },
   "profile": {
@@ -27,8 +51,22 @@
   },
   "summary": "QA-инженер с опытом ручного и автоматизированного тестирования веб-продуктов. Специализируюсь на построении прозрачных процессов качества, снижении числа регрессий и ускорении релизов через автоматизацию критичных сценариев.",
   "contacts": [
-    { "label": "kipavlo.t.me", "href": "https://kipavlo.t.me/", "tooltip": "Написать в Telegram" },
-    { "label": "kipavlo@yahoo.com", "href": "mailto:kipavlo@yahoo.com", "tooltip": "Отправить Email" }
+    {
+      "label": "kipavlo.t.me",
+      "href": "https://kipavlo.t.me/",
+      "tooltip": {
+        "ru": "Написать в Telegram",
+        "en": "Open Telegram"
+      }
+    },
+    {
+      "label": "kipavlo@yahoo.com",
+      "href": "mailto:kipavlo@yahoo.com",
+      "tooltip": {
+        "ru": "Отправить Email",
+        "en": "Send email"
+      }
+    }
   ],
   "skills": [
     "API-тестирование: Postman, Bruno, Swagger, Charles Proxy",
