@@ -6,9 +6,9 @@
     "buttons": {
       "profilePhoto": "Открыть фото",
       "actionsMenu": "Открыть меню",
-      "telegram": "Открыть Telegram",
+      "telegram": "Написать в Telegram",
       "languageToEn": "Switch to English",
-      "languageToRu": "Switch to Russian",
+      "languageToRu": "Переключить на Русский",
       "downloadPdf": "Скачать PDF",
       "downloadPdfLoadingRu": "Генерация PDF...",
       "downloadPdfLoadingEn": "Generating PDF...",
@@ -28,50 +28,57 @@
   "summary": "QA-инженер с опытом ручного и автоматизированного тестирования веб-продуктов. Специализируюсь на построении прозрачных процессов качества, снижении числа регрессий и ускорении релизов через автоматизацию критичных сценариев.",
   "contacts": [
     { "label": "kipavlo.t.me", "href": "https://kipavlo.t.me/", "tooltip": "Написать в Telegram" },
-    { "label": "kipavlo@yahoo.com", "href": "mailto:kipavlo@yahoo.com", "tooltip": "Отправить email" }
+    { "label": "kipavlo@yahoo.com", "href": "mailto:kipavlo@yahoo.com", "tooltip": "Отправить Email" }
   ],
   "skills": [
-    "Тест-дизайн: эквивалентные классы, граничные значения, pairwise",
-    "API-тестирование: Postman, Swagger, Charles Proxy",
-    "Автотесты: Playwright, Cypress, JavaScript/TypeScript",
-    "CI/CD и качество релиза: GitHub Actions, отчеты Allure",
-    "SQL и валидация данных в PostgreSQL",
-    "Работа в Agile-командах, менторство QA"
+    "API-тестирование: Postman, Bruno, Swagger, Charles Proxy",
+    "Автотесты: Playwright, Selenium, Python, Pytest",
+    "CI/CD и качество релиза: Gitlab CI, GitHub Actions, отчеты Allure",
+    "SQL и валидация данных в MSSQL, PostgreSQL",
+    "Работа в Agile-командах, менторство QA",
+    "Внедрение AI в автоматизацию тестирования",
+    "Нагрузочное тестирование Locust, JMeter"
   ],
   "experience": [
     {
       "position": "Senior QA Engineer",
-      "company": "FinTech Platform",
-      "companyUrl": "https://example.com/fintech-platform",
+      "company": "CROC",
+      "companyUrl": "https://croc.ru",
       "period": "2022 - настоящее время",
       "description": "Разработал стратегию тестирования для 4 продуктовых команд, внедрил smoke/regression-пайплайны и сократил количество критичных дефектов в проде на 35%."
     },
     {
       "position": "QA Engineer",
-      "company": "E-commerce Company",
-      "companyUrl": "https://example.com/ecommerce-company",
-      "period": "2019 - 2022",
+      "company": "CROC",
+      "companyUrl": "https://croc.ru",
+      "period": "2018 - 2022",
       "description": "Покрыл автотестами ключевые пользовательские потоки checkout и личного кабинета, что сократило время регрессии с 2 дней до 4 часов."
     }
   ],
   "education": [
     {
-      "program": "Прикладная информатика, бакалавр",
-      "school": "НИУ ВШЭ",
-      "period": "2015 - 2019",
+      "program": "Информатика и вычислительная техника, магистратура",
+      "school": "Российский технологический университет (МИРЭА)",
+      "period": "2018 - 2020",
+      "description": "Фокус на разработке ПО, анализе требований и инженерии качества."
+    },
+    {
+      "program": "Программная инженерия, бакалавриат",
+      "school": "Российский технологический университет (МИРЭА)",
+      "period": "2014 - 2018",
       "description": "Фокус на разработке ПО, анализе требований и инженерии качества."
     }
   ],
   "certifications": [
     {
+      "name": "ISTQB Test Manager",
+      "issuer": "ISTQB",
+      "period": "2023"
+    },
+    {
       "name": "ISTQB Certified Tester Foundation Level",
       "issuer": "ISTQB",
       "period": "2021"
-    },
-    {
-      "name": "Playwright Test Automation",
-      "issuer": "Udemy",
-      "period": "2023"
     }
   ]
 }
