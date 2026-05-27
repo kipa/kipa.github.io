@@ -625,9 +625,8 @@
         }
 
         .language-morphing-text {
-            color: #1d4ed8;
-            text-shadow: 0 0 10px rgba(37, 99, 235, 0.34);
-            transition: color 0.16s ease, text-shadow 0.16s ease;
+            opacity: 0.78;
+            transition: opacity 0.14s ease;
         }
 
         section {
@@ -844,7 +843,7 @@
             }
 
             .language-morphing-text {
-                text-shadow: none;
+                opacity: 1;
                 transition: none;
             }
         }
@@ -1065,9 +1064,9 @@
         let currentPhotoModalSource = "";
         const originalTextByNode = new Map();
         const translatedCache = new Map();
-        const LANGUAGE_MORPH_DURATION = 760;
-        const LANGUAGE_MORPH_CROSSFADE_POINT = 0.48;
-        const LANGUAGE_PIXEL_GLYPHS = ["█", "▓", "▒", "░"];
+        const LANGUAGE_MORPH_DURATION = 640;
+        const LANGUAGE_MORPH_CROSSFADE_POINT = 0.42;
+        const LANGUAGE_PIXEL_GLYPHS = ["▪", "▫"];
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         const liquidBackground = document.querySelector(".liquid-background");
         const parallaxLayers = liquidBackground ? [...liquidBackground.querySelectorAll(".orb-layer[data-depth]")] : [];
@@ -1916,7 +1915,7 @@
                 const renderFrame = (timestamp) => {
                     const rawProgress = Math.min((timestamp - startedAt) / LANGUAGE_MORPH_DURATION, 1);
                     const progress = easeInOutCubic(rawProgress);
-                    const tick = Math.floor(timestamp / 46);
+                    const tick = Math.floor(timestamp / 80);
 
                     activeUpdates.forEach(({ node, fromText, toText }) => {
                         if (node.isConnected) {
