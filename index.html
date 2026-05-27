@@ -624,9 +624,11 @@
             transform: translate3d(0, 0, 0) scale(1);
         }
 
-        .language-morphing-text {
-            opacity: 0.78;
-            transition: opacity 0.14s ease;
+        .language-blur-transition-text {
+            filter: blur(2.4px);
+            opacity: 0.72;
+            transition: filter 0.18s ease, opacity 0.18s ease;
+            will-change: filter, opacity;
         }
 
         section {
@@ -842,7 +844,8 @@
                 opacity: 1;
             }
 
-            .language-morphing-text {
+            .language-blur-transition-text {
+                filter: none;
                 opacity: 1;
                 transition: none;
             }
@@ -1064,9 +1067,8 @@
         let currentPhotoModalSource = "";
         const originalTextByNode = new Map();
         const translatedCache = new Map();
-        const LANGUAGE_MORPH_DURATION = 640;
-        const LANGUAGE_MORPH_CROSSFADE_POINT = 0.42;
-        const LANGUAGE_PIXEL_GLYPHS = ["▪", "▫"];
+        const LANGUAGE_BLUR_IN_DURATION = 180;
+        const LANGUAGE_BLUR_OUT_DURATION = 180;
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         const liquidBackground = document.querySelector(".liquid-background");
         const parallaxLayers = liquidBackground ? [...liquidBackground.querySelectorAll(".orb-layer[data-depth]")] : [];
@@ -1798,74 +1800,10 @@
         }
 
 
-        function easeInOutCubic(progress) {
-            return progress < 0.5
-                ? 4 * progress * progress * progress
-                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-        }
-
-        function easeOutCubic(progress) {
-            return 1 - Math.pow(1 - progress, 3);
-        }
-
-        function getPixelGlyph(index, tick) {
-            return LANGUAGE_PIXEL_GLYPHS[(index + tick) % LANGUAGE_PIXEL_GLYPHS.length];
-        }
-
-        function getMorphReferenceCharacter(fromText, toText, index) {
-            return toText[index] || fromText[index] || "";
-        }
-
-        function buildLanguageMorphFrame(fromText, toText, progress, tick) {
-            if (progress >= 1) {
-                return toText;
-            }
-
-            const fromLength = fromText.length;
-            const toLength = toText.length;
-            const maxLength = Math.max(fromLength, toLength);
-            if (maxLength === 0) {
-                return toText;
-            }
-
-            const output = [];
-            if (progress < LANGUAGE_MORPH_CROSSFADE_POINT) {
-                const pixelProgress = easeOutCubic(progress / LANGUAGE_MORPH_CROSSFADE_POINT);
-                const pixelCount = Math.ceil(maxLength * pixelProgress);
-                const displayLength = Math.max(fromLength, Math.round(fromLength + (maxLength - fromLength) * pixelProgress));
-
-                for (let index = 0; index < displayLength; index += 1) {
-                    const currentCharacter = fromText[index] || "";
-                    const referenceCharacter = getMorphReferenceCharacter(fromText, toText, index);
-                    if (index >= pixelCount && currentCharacter) {
-                        output.push(currentCharacter);
-                    } else if (/\s/.test(referenceCharacter)) {
-                        output.push(referenceCharacter);
-                    } else {
-                        output.push(getPixelGlyph(index, tick));
-                    }
-                }
-
-                return output.join("");
-            }
-
-            const revealProgress = easeOutCubic((progress - LANGUAGE_MORPH_CROSSFADE_POINT) / (1 - LANGUAGE_MORPH_CROSSFADE_POINT));
-            const revealCount = Math.floor(toLength * revealProgress);
-            const displayLength = Math.max(toLength, Math.round(maxLength + (toLength - maxLength) * revealProgress));
-
-            for (let index = 0; index < displayLength; index += 1) {
-                const targetCharacter = toText[index] || "";
-                if (index < revealCount && targetCharacter) {
-                    output.push(targetCharacter);
-                } else if (/\s/.test(targetCharacter)) {
-                    output.push(targetCharacter);
-                } else {
-                    const referenceCharacter = getMorphReferenceCharacter(fromText, toText, index);
-                    output.push(/\s/.test(referenceCharacter) ? referenceCharacter : getPixelGlyph(index, tick));
-                }
-            }
-
-            return output.join("");
+        function waitForLanguageTransitionFrame(duration) {
+            return new Promise((resolve) => {
+                window.setTimeout(resolve, duration);
+            });
         }
 
         function applyTextUpdates(updates) {
@@ -1876,63 +1814,29 @@
             });
         }
 
-        function animateLanguageTextTransition(updates) {
-            const activeUpdates = updates
-                .filter(({ node, toText }) => node?.isConnected && typeof toText === "string")
-                .map(({ node, toText }) => ({
-                    node,
-                    fromText: node.textContent,
-                    toText
-                }))
-                .filter(({ fromText, toText }) => fromText !== toText);
+        async function animateLanguageTextTransition(updates) {
+            const activeUpdates = updates.filter(({ node, toText }) => {
+                return node?.isConnected && typeof toText === "string" && node.textContent !== toText;
+            });
 
             if (!activeUpdates.length || reducedMotionQuery.matches) {
                 applyTextUpdates(updates);
-                return Promise.resolve();
+                return;
             }
 
             const animatedParents = new Set();
             activeUpdates.forEach(({ node }) => {
                 if (node.parentElement) {
                     animatedParents.add(node.parentElement);
-                    node.parentElement.classList.add("language-morphing-text");
+                    node.parentElement.classList.add("language-blur-transition-text");
                 }
             });
 
-            return new Promise((resolve) => {
-                const startedAt = performance.now();
-
-                const finish = () => {
-                    activeUpdates.forEach(({ node, toText }) => {
-                        if (node.isConnected) {
-                            node.textContent = toText;
-                        }
-                    });
-                    animatedParents.forEach((parent) => parent.classList.remove("language-morphing-text"));
-                    resolve();
-                };
-
-                const renderFrame = (timestamp) => {
-                    const rawProgress = Math.min((timestamp - startedAt) / LANGUAGE_MORPH_DURATION, 1);
-                    const progress = easeInOutCubic(rawProgress);
-                    const tick = Math.floor(timestamp / 80);
-
-                    activeUpdates.forEach(({ node, fromText, toText }) => {
-                        if (node.isConnected) {
-                            node.textContent = buildLanguageMorphFrame(fromText, toText, progress, tick);
-                        }
-                    });
-
-                    if (rawProgress < 1) {
-                        requestAnimationFrame(renderFrame);
-                        return;
-                    }
-
-                    finish();
-                };
-
-                requestAnimationFrame(renderFrame);
-            });
+            await waitForLanguageTransitionFrame(LANGUAGE_BLUR_IN_DURATION);
+            applyTextUpdates(updates);
+            await new Promise((resolve) => requestAnimationFrame(resolve));
+            animatedParents.forEach((parent) => parent.classList.remove("language-blur-transition-text"));
+            await waitForLanguageTransitionFrame(LANGUAGE_BLUR_OUT_DURATION);
         }
 
         function buildLanguageUpdatesForOriginalText() {
