@@ -624,46 +624,12 @@
             transform: translate3d(0, 0, 0) scale(1);
         }
 
-        @keyframes terminalTextFlicker {
-            0%, 100% {
-                opacity: 1;
-                filter: none;
-                text-shadow: none;
-                transform: translate3d(0, 0, 0);
-            }
-            18% {
-                opacity: 0.42;
-                filter: contrast(1.18);
-                text-shadow:
-                    0.055em 0 rgba(15, 23, 42, 0.28),
-                    -0.055em 0 rgba(37, 99, 235, 0.16);
-                transform: translate3d(0.55px, 0, 0);
-            }
-            34% {
-                opacity: 0.96;
-                filter: none;
-                text-shadow: none;
-                transform: translate3d(0, 0, 0);
-            }
-            56% {
-                opacity: 0.55;
-                filter: contrast(1.12);
-                text-shadow:
-                    -0.05em 0 rgba(15, 23, 42, 0.22),
-                    0.05em 0 rgba(37, 99, 235, 0.12);
-                transform: translate3d(-0.45px, 0, 0);
-            }
-            74% {
-                opacity: 0.88;
-                filter: none;
-                text-shadow: 0.025em 0 rgba(15, 23, 42, 0.16);
-                transform: translate3d(0.2px, 0, 0);
-            }
+        .language-word-replace-text {
+            transition: opacity 0.08s ease;
         }
 
-        .language-terminal-flicker-text {
-            animation: terminalTextFlicker 0.36s steps(1, end) both;
-            will-change: opacity, filter, text-shadow, transform;
+        .language-word-replace-text.is-replacing {
+            opacity: 0.82;
         }
 
         section {
@@ -879,12 +845,10 @@
                 opacity: 1;
             }
 
-            .language-terminal-flicker-text {
-                animation: none !important;
+            .language-word-replace-text,
+            .language-word-replace-text.is-replacing {
                 opacity: 1;
-                filter: none;
-                text-shadow: none;
-                transform: none;
+                transition: none;
             }
         }
 
@@ -1104,10 +1068,9 @@
         let currentPhotoModalSource = "";
         const originalTextByNode = new Map();
         const translatedCache = new Map();
-        const LANGUAGE_TERMINAL_FLICKER_DURATION = 360;
-        const LANGUAGE_TERMINAL_FLICKER_SWAP_DELAY = 170;
-        const LANGUAGE_TERMINAL_FLICKER_STAGGER = 10;
-        const LANGUAGE_TERMINAL_FLICKER_MAX_STAGGER = 180;
+        const LANGUAGE_WORD_REPLACE_INTERVAL = 34;
+        const LANGUAGE_WORD_REPLACE_GROUP_STAGGER = 22;
+        const LANGUAGE_WORD_REPLACE_MAX_GROUP_STAGGER = 520;
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         const liquidBackground = document.querySelector(".liquid-background");
         const parallaxLayers = liquidBackground ? [...liquidBackground.querySelectorAll(".orb-layer[data-depth]")] : [];
@@ -1853,8 +1816,8 @@
             });
         }
 
-        function getLanguageTerminalFlickerDelay(index) {
-            return Math.min(index * LANGUAGE_TERMINAL_FLICKER_STAGGER, LANGUAGE_TERMINAL_FLICKER_MAX_STAGGER);
+        function getLanguageWordReplaceGroupDelay(index) {
+            return Math.min(index * LANGUAGE_WORD_REPLACE_GROUP_STAGGER, LANGUAGE_WORD_REPLACE_MAX_GROUP_STAGGER);
         }
 
         function getLanguageTransitionGroups(updates) {
@@ -1885,6 +1848,75 @@
                 });
         }
 
+        function parseLanguageWords(text) {
+            const words = [];
+            const matcher = /(\s*)(\S+)/g;
+            let match = matcher.exec(text);
+            let lastIndex = 0;
+
+            while (match) {
+                words.push({
+                    leading: match[1] || "",
+                    value: match[2] || ""
+                });
+                lastIndex = matcher.lastIndex;
+                match = matcher.exec(text);
+            }
+
+            return {
+                words,
+                trailing: text.slice(lastIndex)
+            };
+        }
+
+        function getLanguageWordCount(text) {
+            return parseLanguageWords(text).words.length;
+        }
+
+        function buildLanguageWordReplacementFrame(fromText, toText, revealedWords) {
+            const fromParts = parseLanguageWords(fromText);
+            const toParts = parseLanguageWords(toText);
+            const maxWords = Math.max(fromParts.words.length, toParts.words.length);
+
+            if (maxWords === 0) {
+                return revealedWords > 0 ? toText : fromText;
+            }
+
+            let output = "";
+            for (let index = 0; index < maxWords; index += 1) {
+                const part = index < revealedWords
+                    ? toParts.words[index]
+                    : fromParts.words[index];
+
+                if (part) {
+                    output += `${part.leading}${part.value}`;
+                }
+            }
+
+            return output + (revealedWords >= maxWords ? toParts.trailing : fromParts.trailing);
+        }
+
+        function scheduleLanguageWordReplacement(update, startDelay) {
+            const fromText = update.node.textContent;
+            const toText = update.toText;
+            const wordCount = Math.max(getLanguageWordCount(fromText), getLanguageWordCount(toText));
+
+            if (wordCount === 0) {
+                window.setTimeout(() => applyTextUpdates([update]), startDelay);
+                return LANGUAGE_WORD_REPLACE_INTERVAL;
+            }
+
+            for (let step = 1; step <= wordCount; step += 1) {
+                window.setTimeout(() => {
+                    if (update.node?.isConnected) {
+                        update.node.textContent = buildLanguageWordReplacementFrame(fromText, toText, step);
+                    }
+                }, startDelay + ((step - 1) * LANGUAGE_WORD_REPLACE_INTERVAL));
+            }
+
+            return wordCount * LANGUAGE_WORD_REPLACE_INTERVAL;
+        }
+
         async function animateLanguageTextTransition(updates) {
             const activeUpdates = updates.filter(({ node, toText }) => {
                 return node?.isConnected && typeof toText === "string" && node.textContent !== toText;
@@ -1901,21 +1933,33 @@
                 return;
             }
 
-            groups.forEach(({ element, updates: groupUpdates }, index) => {
-                const delay = getLanguageTerminalFlickerDelay(index);
+            let totalDuration = 0;
+            groups.forEach(({ element, updates: groupUpdates }, groupIndex) => {
+                const groupDelay = getLanguageWordReplaceGroupDelay(groupIndex);
+                let localDelay = 0;
+
                 window.setTimeout(() => {
-                    element.classList.add("language-terminal-flicker-text");
-                }, delay);
+                    element.classList.add("language-word-replace-text", "is-replacing");
+                }, groupDelay);
+
+                groupUpdates.forEach((update) => {
+                    const duration = scheduleLanguageWordReplacement(update, groupDelay + localDelay);
+                    localDelay += duration;
+                });
+
                 window.setTimeout(() => {
-                    applyTextUpdates(groupUpdates);
-                }, delay + LANGUAGE_TERMINAL_FLICKER_SWAP_DELAY);
-                window.setTimeout(() => {
-                    element.classList.remove("language-terminal-flicker-text");
-                }, delay + LANGUAGE_TERMINAL_FLICKER_DURATION);
+                    element.classList.remove("is-replacing");
+                }, groupDelay + localDelay);
+
+                totalDuration = Math.max(totalDuration, groupDelay + localDelay);
             });
 
-            const lastDelay = getLanguageTerminalFlickerDelay(groups.length - 1);
-            await waitForLanguageTransitionFrame(lastDelay + LANGUAGE_TERMINAL_FLICKER_DURATION);
+            await waitForLanguageTransitionFrame(totalDuration + LANGUAGE_WORD_REPLACE_INTERVAL);
+            applyTextUpdates(activeUpdates);
+
+            groups.forEach(({ element }) => {
+                element.classList.remove("language-word-replace-text", "is-replacing");
+            });
         }
 
         function buildLanguageUpdatesForOriginalText() {
