@@ -624,11 +624,10 @@
             transform: translate3d(0, 0, 0) scale(1);
         }
 
-        .language-blur-transition-text {
-            filter: blur(2.4px);
-            opacity: 0.72;
-            transition: filter 0.18s ease, opacity 0.18s ease;
-            will-change: filter, opacity;
+        .language-line-fade-text {
+            opacity: 0;
+            transition: opacity 0.16s ease;
+            will-change: opacity;
         }
 
         section {
@@ -844,8 +843,7 @@
                 opacity: 1;
             }
 
-            .language-blur-transition-text {
-                filter: none;
+            .language-line-fade-text {
                 opacity: 1;
                 transition: none;
             }
@@ -1067,8 +1065,10 @@
         let currentPhotoModalSource = "";
         const originalTextByNode = new Map();
         const translatedCache = new Map();
-        const LANGUAGE_BLUR_IN_DURATION = 180;
-        const LANGUAGE_BLUR_OUT_DURATION = 180;
+        const LANGUAGE_LINE_FADE_OUT_DURATION = 150;
+        const LANGUAGE_LINE_FADE_IN_DURATION = 180;
+        const LANGUAGE_LINE_FADE_STAGGER = 18;
+        const LANGUAGE_LINE_FADE_MAX_STAGGER = 420;
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         const liquidBackground = document.querySelector(".liquid-background");
         const parallaxLayers = liquidBackground ? [...liquidBackground.querySelectorAll(".orb-layer[data-depth]")] : [];
@@ -1814,6 +1814,38 @@
             });
         }
 
+        function getLanguageLineFadeDelay(index) {
+            return Math.min(index * LANGUAGE_LINE_FADE_STAGGER, LANGUAGE_LINE_FADE_MAX_STAGGER);
+        }
+
+        function getLanguageLineFadeGroups(updates) {
+            const groupedByParent = new Map();
+            updates.forEach((update) => {
+                const parent = update.node?.parentElement;
+                if (!parent) {
+                    return;
+                }
+
+                const group = groupedByParent.get(parent) || [];
+                group.push(update);
+                groupedByParent.set(parent, group);
+            });
+
+            return [...groupedByParent.entries()]
+                .map(([element, groupUpdates]) => ({
+                    element,
+                    updates: groupUpdates,
+                    rect: element.getBoundingClientRect()
+                }))
+                .sort((first, second) => {
+                    const topDelta = first.rect.top - second.rect.top;
+                    if (Math.abs(topDelta) > 2) {
+                        return topDelta;
+                    }
+                    return first.rect.left - second.rect.left;
+                });
+        }
+
         async function animateLanguageTextTransition(updates) {
             const activeUpdates = updates.filter(({ node, toText }) => {
                 return node?.isConnected && typeof toText === "string" && node.textContent !== toText;
@@ -1824,19 +1856,30 @@
                 return;
             }
 
-            const animatedParents = new Set();
-            activeUpdates.forEach(({ node }) => {
-                if (node.parentElement) {
-                    animatedParents.add(node.parentElement);
-                    node.parentElement.classList.add("language-blur-transition-text");
-                }
+            const groups = getLanguageLineFadeGroups(activeUpdates);
+            if (!groups.length) {
+                applyTextUpdates(updates);
+                return;
+            }
+
+            groups.forEach(({ element }, index) => {
+                window.setTimeout(() => {
+                    element.classList.add("language-line-fade-text");
+                }, getLanguageLineFadeDelay(index));
             });
 
-            await waitForLanguageTransitionFrame(LANGUAGE_BLUR_IN_DURATION);
-            applyTextUpdates(updates);
+            const lastDelay = getLanguageLineFadeDelay(groups.length - 1);
+            await waitForLanguageTransitionFrame(lastDelay + LANGUAGE_LINE_FADE_OUT_DURATION);
+            applyTextUpdates(activeUpdates);
             await new Promise((resolve) => requestAnimationFrame(resolve));
-            animatedParents.forEach((parent) => parent.classList.remove("language-blur-transition-text"));
-            await waitForLanguageTransitionFrame(LANGUAGE_BLUR_OUT_DURATION);
+
+            groups.forEach(({ element }, index) => {
+                window.setTimeout(() => {
+                    element.classList.remove("language-line-fade-text");
+                }, getLanguageLineFadeDelay(index));
+            });
+
+            await waitForLanguageTransitionFrame(lastDelay + LANGUAGE_LINE_FADE_IN_DURATION);
         }
 
         function buildLanguageUpdatesForOriginalText() {
