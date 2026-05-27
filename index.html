@@ -624,10 +624,27 @@
             transform: translate3d(0, 0, 0) scale(1);
         }
 
-        .language-line-fade-text {
-            opacity: 0;
-            transition: opacity 0.16s ease;
-            will-change: opacity;
+        @keyframes terminalTextFlicker {
+            0%, 100% {
+                opacity: 1;
+                text-shadow: none;
+                transform: translate3d(0, 0, 0);
+            }
+            34% {
+                opacity: 0.72;
+                text-shadow: 0.035em 0 rgba(15, 23, 42, 0.18);
+                transform: translate3d(0.35px, 0, 0);
+            }
+            68% {
+                opacity: 0.9;
+                text-shadow: -0.035em 0 rgba(15, 23, 42, 0.12);
+                transform: translate3d(-0.25px, 0, 0);
+            }
+        }
+
+        .language-terminal-flicker-text {
+            animation: terminalTextFlicker 0.18s steps(2, end) both;
+            will-change: opacity, text-shadow, transform;
         }
 
         section {
@@ -843,9 +860,11 @@
                 opacity: 1;
             }
 
-            .language-line-fade-text {
+            .language-terminal-flicker-text {
+                animation: none !important;
                 opacity: 1;
-                transition: none;
+                text-shadow: none;
+                transform: none;
             }
         }
 
@@ -1065,10 +1084,10 @@
         let currentPhotoModalSource = "";
         const originalTextByNode = new Map();
         const translatedCache = new Map();
-        const LANGUAGE_LINE_FADE_OUT_DURATION = 150;
-        const LANGUAGE_LINE_FADE_IN_DURATION = 180;
-        const LANGUAGE_LINE_FADE_STAGGER = 18;
-        const LANGUAGE_LINE_FADE_MAX_STAGGER = 420;
+        const LANGUAGE_TERMINAL_FLICKER_DURATION = 180;
+        const LANGUAGE_TERMINAL_FLICKER_SWAP_DELAY = 82;
+        const LANGUAGE_TERMINAL_FLICKER_STAGGER = 6;
+        const LANGUAGE_TERMINAL_FLICKER_MAX_STAGGER = 120;
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         const liquidBackground = document.querySelector(".liquid-background");
         const parallaxLayers = liquidBackground ? [...liquidBackground.querySelectorAll(".orb-layer[data-depth]")] : [];
@@ -1814,11 +1833,11 @@
             });
         }
 
-        function getLanguageLineFadeDelay(index) {
-            return Math.min(index * LANGUAGE_LINE_FADE_STAGGER, LANGUAGE_LINE_FADE_MAX_STAGGER);
+        function getLanguageTerminalFlickerDelay(index) {
+            return Math.min(index * LANGUAGE_TERMINAL_FLICKER_STAGGER, LANGUAGE_TERMINAL_FLICKER_MAX_STAGGER);
         }
 
-        function getLanguageLineFadeGroups(updates) {
+        function getLanguageTransitionGroups(updates) {
             const groupedByParent = new Map();
             updates.forEach((update) => {
                 const parent = update.node?.parentElement;
@@ -1856,30 +1875,27 @@
                 return;
             }
 
-            const groups = getLanguageLineFadeGroups(activeUpdates);
+            const groups = getLanguageTransitionGroups(activeUpdates);
             if (!groups.length) {
                 applyTextUpdates(updates);
                 return;
             }
 
-            groups.forEach(({ element }, index) => {
+            groups.forEach(({ element, updates: groupUpdates }, index) => {
+                const delay = getLanguageTerminalFlickerDelay(index);
                 window.setTimeout(() => {
-                    element.classList.add("language-line-fade-text");
-                }, getLanguageLineFadeDelay(index));
+                    element.classList.add("language-terminal-flicker-text");
+                }, delay);
+                window.setTimeout(() => {
+                    applyTextUpdates(groupUpdates);
+                }, delay + LANGUAGE_TERMINAL_FLICKER_SWAP_DELAY);
+                window.setTimeout(() => {
+                    element.classList.remove("language-terminal-flicker-text");
+                }, delay + LANGUAGE_TERMINAL_FLICKER_DURATION);
             });
 
-            const lastDelay = getLanguageLineFadeDelay(groups.length - 1);
-            await waitForLanguageTransitionFrame(lastDelay + LANGUAGE_LINE_FADE_OUT_DURATION);
-            applyTextUpdates(activeUpdates);
-            await new Promise((resolve) => requestAnimationFrame(resolve));
-
-            groups.forEach(({ element }, index) => {
-                window.setTimeout(() => {
-                    element.classList.remove("language-line-fade-text");
-                }, getLanguageLineFadeDelay(index));
-            });
-
-            await waitForLanguageTransitionFrame(lastDelay + LANGUAGE_LINE_FADE_IN_DURATION);
+            const lastDelay = getLanguageTerminalFlickerDelay(groups.length - 1);
+            await waitForLanguageTransitionFrame(lastDelay + LANGUAGE_TERMINAL_FLICKER_DURATION);
         }
 
         function buildLanguageUpdatesForOriginalText() {
