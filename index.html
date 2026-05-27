@@ -624,6 +624,14 @@
             transform: translate3d(0, 0, 0) scale(1);
         }
 
+        .language-word-replace-text {
+            transition: opacity 0.08s ease;
+        }
+
+        .language-word-replace-text.is-replacing {
+            opacity: 0.82;
+        }
+
         section {
             border-top: 1px solid #e2e8f0;
             margin-top: 22px;
@@ -835,6 +843,12 @@
 
             .resume.ready .reveal {
                 opacity: 1;
+            }
+
+            .language-word-replace-text,
+            .language-word-replace-text.is-replacing {
+                opacity: 1;
+                transition: none;
             }
         }
 
@@ -1054,6 +1068,9 @@
         let currentPhotoModalSource = "";
         const originalTextByNode = new Map();
         const translatedCache = new Map();
+        const LANGUAGE_WORD_REPLACE_INTERVAL = 34;
+        const LANGUAGE_WORD_REPLACE_GROUP_STAGGER = 22;
+        const LANGUAGE_WORD_REPLACE_MAX_GROUP_STAGGER = 520;
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         const liquidBackground = document.querySelector(".liquid-background");
         const parallaxLayers = liquidBackground ? [...liquidBackground.querySelectorAll(".orb-layer[data-depth]")] : [];
@@ -1784,6 +1801,187 @@
             return translated;
         }
 
+
+        function waitForLanguageTransitionFrame(duration) {
+            return new Promise((resolve) => {
+                window.setTimeout(resolve, duration);
+            });
+        }
+
+        function applyTextUpdates(updates) {
+            updates.forEach(({ node, toText }) => {
+                if (node?.isConnected) {
+                    node.textContent = toText;
+                }
+            });
+        }
+
+        function getLanguageWordReplaceGroupDelay(index) {
+            return Math.min(index * LANGUAGE_WORD_REPLACE_GROUP_STAGGER, LANGUAGE_WORD_REPLACE_MAX_GROUP_STAGGER);
+        }
+
+        function getLanguageTransitionGroups(updates) {
+            const groupedByParent = new Map();
+            updates.forEach((update) => {
+                const parent = update.node?.parentElement;
+                if (!parent) {
+                    return;
+                }
+
+                const group = groupedByParent.get(parent) || [];
+                group.push(update);
+                groupedByParent.set(parent, group);
+            });
+
+            return [...groupedByParent.entries()]
+                .map(([element, groupUpdates]) => ({
+                    element,
+                    updates: groupUpdates,
+                    rect: element.getBoundingClientRect()
+                }))
+                .sort((first, second) => {
+                    const topDelta = first.rect.top - second.rect.top;
+                    if (Math.abs(topDelta) > 2) {
+                        return topDelta;
+                    }
+                    return first.rect.left - second.rect.left;
+                });
+        }
+
+        function parseLanguageWords(text) {
+            const words = [];
+            const matcher = /(\s*)(\S+)/g;
+            let match = matcher.exec(text);
+            let lastIndex = 0;
+
+            while (match) {
+                words.push({
+                    leading: match[1] || "",
+                    value: match[2] || ""
+                });
+                lastIndex = matcher.lastIndex;
+                match = matcher.exec(text);
+            }
+
+            return {
+                words,
+                trailing: text.slice(lastIndex)
+            };
+        }
+
+        function getLanguageWordCount(text) {
+            return parseLanguageWords(text).words.length;
+        }
+
+        function buildLanguageWordReplacementFrame(fromText, toText, revealedWords) {
+            const fromParts = parseLanguageWords(fromText);
+            const toParts = parseLanguageWords(toText);
+            const maxWords = Math.max(fromParts.words.length, toParts.words.length);
+
+            if (maxWords === 0) {
+                return revealedWords > 0 ? toText : fromText;
+            }
+
+            let output = "";
+            for (let index = 0; index < maxWords; index += 1) {
+                const part = index < revealedWords
+                    ? toParts.words[index]
+                    : fromParts.words[index];
+
+                if (part) {
+                    output += `${part.leading}${part.value}`;
+                }
+            }
+
+            return output + (revealedWords >= maxWords ? toParts.trailing : fromParts.trailing);
+        }
+
+        function scheduleLanguageWordReplacement(update, startDelay) {
+            const fromText = update.node.textContent;
+            const toText = update.toText;
+            const wordCount = Math.max(getLanguageWordCount(fromText), getLanguageWordCount(toText));
+
+            if (wordCount === 0) {
+                window.setTimeout(() => applyTextUpdates([update]), startDelay);
+                return LANGUAGE_WORD_REPLACE_INTERVAL;
+            }
+
+            for (let step = 1; step <= wordCount; step += 1) {
+                window.setTimeout(() => {
+                    if (update.node?.isConnected) {
+                        update.node.textContent = buildLanguageWordReplacementFrame(fromText, toText, step);
+                    }
+                }, startDelay + ((step - 1) * LANGUAGE_WORD_REPLACE_INTERVAL));
+            }
+
+            return wordCount * LANGUAGE_WORD_REPLACE_INTERVAL;
+        }
+
+        async function animateLanguageTextTransition(updates) {
+            const activeUpdates = updates.filter(({ node, toText }) => {
+                return node?.isConnected && typeof toText === "string" && node.textContent !== toText;
+            });
+
+            if (!activeUpdates.length || reducedMotionQuery.matches) {
+                applyTextUpdates(updates);
+                return;
+            }
+
+            const groups = getLanguageTransitionGroups(activeUpdates);
+            if (!groups.length) {
+                applyTextUpdates(updates);
+                return;
+            }
+
+            let totalDuration = 0;
+            groups.forEach(({ element, updates: groupUpdates }, groupIndex) => {
+                const groupDelay = getLanguageWordReplaceGroupDelay(groupIndex);
+                let localDelay = 0;
+
+                window.setTimeout(() => {
+                    element.classList.add("language-word-replace-text", "is-replacing");
+                }, groupDelay);
+
+                groupUpdates.forEach((update) => {
+                    const duration = scheduleLanguageWordReplacement(update, groupDelay + localDelay);
+                    localDelay += duration;
+                });
+
+                window.setTimeout(() => {
+                    element.classList.remove("is-replacing");
+                }, groupDelay + localDelay);
+
+                totalDuration = Math.max(totalDuration, groupDelay + localDelay);
+            });
+
+            await waitForLanguageTransitionFrame(totalDuration + LANGUAGE_WORD_REPLACE_INTERVAL);
+            applyTextUpdates(activeUpdates);
+
+            groups.forEach(({ element }) => {
+                element.classList.remove("language-word-replace-text", "is-replacing");
+            });
+        }
+
+        function buildLanguageUpdatesForOriginalText() {
+            return [...originalTextByNode.entries()].map(([node, text]) => ({
+                node,
+                toText: text
+            }));
+        }
+
+        function buildLanguageUpdatesForTranslatedText(translatedMap) {
+            return [...originalTextByNode.entries()].map(([node, original]) => {
+                const normalized = original.trim();
+                const translated = translatedMap.get(normalized);
+                return {
+                    node,
+                    toText: normalized && translated
+                        ? original.replace(normalized, translated)
+                        : original
+                };
+            });
+        }
+
         async function setLanguage(targetLanguage) {
             if (isTranslating || currentLanguage === targetLanguage) {
                 return;
@@ -1796,9 +1994,7 @@
 
             try {
                 if (targetLanguage === "ru") {
-                    for (const [node, text] of originalTextByNode.entries()) {
-                        node.textContent = text;
-                    }
+                    await animateLanguageTextTransition(buildLanguageUpdatesForOriginalText());
                     document.title = baseTitle;
                     document.documentElement.lang = "ru";
                     setLanguageButtonText(languageButton, "EN");
@@ -1818,14 +2014,7 @@
                     translatedMap.set(text, translated || text);
                 }));
 
-                nodes.forEach((node) => {
-                    const original = originalTextByNode.get(node);
-                    const normalized = original.trim();
-                    const translated = translatedMap.get(normalized);
-                    if (normalized && translated) {
-                        node.textContent = original.replace(normalized, translated);
-                    }
-                });
+                await animateLanguageTextTransition(buildLanguageUpdatesForTranslatedText(translatedMap));
 
                 document.title = await translateText(baseTitle, "en");
                 document.documentElement.lang = "en";
