@@ -627,24 +627,43 @@
         @keyframes terminalTextFlicker {
             0%, 100% {
                 opacity: 1;
+                filter: none;
                 text-shadow: none;
                 transform: translate3d(0, 0, 0);
             }
-            34% {
-                opacity: 0.72;
-                text-shadow: 0.035em 0 rgba(15, 23, 42, 0.18);
-                transform: translate3d(0.35px, 0, 0);
+            18% {
+                opacity: 0.42;
+                filter: contrast(1.18);
+                text-shadow:
+                    0.055em 0 rgba(15, 23, 42, 0.28),
+                    -0.055em 0 rgba(37, 99, 235, 0.16);
+                transform: translate3d(0.55px, 0, 0);
             }
-            68% {
-                opacity: 0.9;
-                text-shadow: -0.035em 0 rgba(15, 23, 42, 0.12);
-                transform: translate3d(-0.25px, 0, 0);
+            34% {
+                opacity: 0.96;
+                filter: none;
+                text-shadow: none;
+                transform: translate3d(0, 0, 0);
+            }
+            56% {
+                opacity: 0.55;
+                filter: contrast(1.12);
+                text-shadow:
+                    -0.05em 0 rgba(15, 23, 42, 0.22),
+                    0.05em 0 rgba(37, 99, 235, 0.12);
+                transform: translate3d(-0.45px, 0, 0);
+            }
+            74% {
+                opacity: 0.88;
+                filter: none;
+                text-shadow: 0.025em 0 rgba(15, 23, 42, 0.16);
+                transform: translate3d(0.2px, 0, 0);
             }
         }
 
         .language-terminal-flicker-text {
-            animation: terminalTextFlicker 0.18s steps(2, end) both;
-            will-change: opacity, text-shadow, transform;
+            animation: terminalTextFlicker 0.36s steps(1, end) both;
+            will-change: opacity, filter, text-shadow, transform;
         }
 
         section {
@@ -863,6 +882,7 @@
             .language-terminal-flicker-text {
                 animation: none !important;
                 opacity: 1;
+                filter: none;
                 text-shadow: none;
                 transform: none;
             }
@@ -1084,10 +1104,10 @@
         let currentPhotoModalSource = "";
         const originalTextByNode = new Map();
         const translatedCache = new Map();
-        const LANGUAGE_TERMINAL_FLICKER_DURATION = 180;
-        const LANGUAGE_TERMINAL_FLICKER_SWAP_DELAY = 82;
-        const LANGUAGE_TERMINAL_FLICKER_STAGGER = 6;
-        const LANGUAGE_TERMINAL_FLICKER_MAX_STAGGER = 120;
+        const LANGUAGE_TERMINAL_FLICKER_DURATION = 360;
+        const LANGUAGE_TERMINAL_FLICKER_SWAP_DELAY = 170;
+        const LANGUAGE_TERMINAL_FLICKER_STAGGER = 10;
+        const LANGUAGE_TERMINAL_FLICKER_MAX_STAGGER = 180;
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         const liquidBackground = document.querySelector(".liquid-background");
         const parallaxLayers = liquidBackground ? [...liquidBackground.querySelectorAll(".orb-layer[data-depth]")] : [];
