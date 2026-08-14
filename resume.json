@@ -46,8 +46,8 @@
     "photoThumbnail": "./profile-photo.jpg",
     "photoModal": "./profile-photo-expanded.jpg",
     "telegram": "https://kipavlo.t.me/",
-    "currentCompany": "CROC",
-    "currentCompanyUrl": "https://www.croc.ru/"
+    "currentCompany": "Open for opportunities",
+    "currentCompanyUrl": "#"
   },
   "summary": "QA-инженер с опытом ручного и автоматизированного тестирования веб-продуктов. Специализируюсь на построении прозрачных процессов качества, снижении числа регрессий и ускорении релизов через автоматизацию критичных сценариев.",
   "contacts": [
@@ -95,7 +95,7 @@
       "position": "Senior QA Engineer",
       "company": "CROC",
       "companyUrl": "https://croc.ru",
-      "period": "2022 - настоящее время",
+      "period": "2022 - 2026",
       "description": "Разработал стратегию тестирования для 4 продуктовых команд, внедрил smoke/regression-пайплайны и сократил количество критичных дефектов в проде на 35%."
     },
     {
