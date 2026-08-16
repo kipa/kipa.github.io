@@ -1,6 +1,6 @@
 {
   "meta": {
-    "pageTitle": "Кирилл Павлов - QA Engineer",
+    "pageTitle": "Кирилл Павлов - QA Lead",
     "infoLevel": 1
   },
   "tooltips": {
@@ -41,15 +41,15 @@
   },
   "profile": {
     "name": "Кирилл Павлов",
-    "title": "Lead QA",
+    "title": "QA Lead",
     "photo": "./profile-photo.jpg",
     "photoThumbnail": "./profile-photo.jpg",
     "photoModal": "./profile-photo-expanded.jpg",
     "telegram": "https://kipavlo.t.me/",
-    "currentCompany": "Open for opportunities",
+    "currentCompany": "Открыт для предложений",
     "currentCompanyUrl": "#"
   },
-  "summary": "QA-инженер с опытом ручного и автоматизированного тестирования веб-продуктов. Специализируюсь на построении прозрачных процессов качества, снижении числа регрессий и ускорении релизов через автоматизацию критичных сценариев.",
+  "summary": "Fullstack QA Engineer с 7+ лет опыта в крупных enterprise-проектах. Строю фреймворки автоматизации с нуля (Python + PyTest + Playwright/Selenium), настраиваю CI/CD-пайплайны, провожу нагрузочное тестирование и управляю QA-командой. Активно внедряю AI-инструменты в процессы тестирования и совмещаю технический QA с UX-анализом и прототипированием в Figma. Сертифицирован по ISTQB Advanced Level (Test Manager).",
   "contacts": [
     {
       "label": "kipavlo.t.me",
@@ -77,33 +77,47 @@
     }
   ],
   "skills": [
-    "API-тестирование: Postman, Bruno, Swagger, Charles Proxy",
-    "Автоматизация тестирования: Python, Pytest, Playwright, Selenium",
-    "CI/CD и качество релиза: Gitlab CI, GitHub Actions, Jenkins, Allure",
-    "UX/UI дизайн и прототипирование: Figma, Sketch, пакет Adobe (включая XD)",
-    "Ручное и автоматизированное тестирование BPM-систем (BPMSoft)",
-    "Работа с документацией: Confluence, TestIT, TestRail",
-    "UX-анализ и оптимизация решений в процессе тестирования",
-    "SQL и валидация данных в MSSQL, PostgreSQL",
-    "Работа в Agile-командах, менторство QA",
-    "Внедрение AI в автоматизацию тестирования",
-    "Нагрузочное тестирование Locust, JMeter",
-    "Тестирование хранилищ DWH"
+    "Управление QA-командой: найм, менторинг, карьерные треки, технические интервью",
+    "Автоматизация UI/E2E: Python, PyTest, Selenium, Playwright, Page Object Model",
+    "API-тестирование: Postman, Bruno, SoapUI, REST, SOAP",
+    "Нагрузочное тестирование: Locust, Apache JMeter",
+    "CI/CD: GitLab CI, Jenkins, GitHub Actions",
+    "Внедрение AI в QA-процессы: LLM-as-a-judge, генерация тест-планов, AI-ассистенты",
+    "UX/UI-прототипирование и ревью: Figma, Adobe XD, Sketch, Adobe Photoshop/Illustrator",
+    "Тестирование BPM-систем и DWH: BPMSoft CRM, SSAS, MSSQL, PostgreSQL",
+    "Тест-документация и отчётность: TestRail, TestIT, Allure, Jira, Confluence",
+    "SQL и валидация данных",
+    "Релиз-менеджмент, go/no-go решения, пресейлы",
+    "ISTQB Advanced Level (Test Manager)"
   ],
   "experience": [
     {
-      "position": "Senior QA Engineer",
+      "position": "QA Lead",
       "company": "CROC",
       "companyUrl": "https://croc.ru",
-      "period": "2022 - 2026",
-      "description": "Разработал стратегию тестирования для 4 продуктовых команд, внедрил smoke/regression-пайплайны и сократил количество критичных дефектов в проде на 35%."
+      "period": "Январь 2025 - настоящее время",
+      "description": "Управляю QA-командой: найм, менторинг, развитие специалистов. Участвую в пресейлах и релиз-менеджменте, внедряю AI-инструменты в QA-процессы. Автоматизировал верификацию ответов RAG-системы через LLM-as-a-judge, сократив время ревью в 8 раз."
     },
     {
-      "position": "QA Engineer",
+      "position": "Senior QA",
       "company": "CROC",
       "companyUrl": "https://croc.ru",
-      "period": "2018 - 2022",
-      "description": "Покрыл автотестами ключевые пользовательские потоки checkout и личного кабинета, что сократило время регрессии с 2 дней до 4 часов."
+      "period": "Ноябрь 2021 - Январь 2025",
+      "description": "Спроектировал фреймворки UI/E2E-автоматизации на Python + PyTest + Selenium/Playwright и API-тестирование на Postman/Bruno. Провёл нагрузочное тестирование системы геймификации (Locust), увеличив выдерживаемую нагрузку в 5-10x. Построил CI/CD-пайплайны в GitLab CI/Jenkins; ревью UI-прототипов в Figma сократило дефекты в 2-3 раза."
+    },
+    {
+      "position": "Middle QA",
+      "company": "CROC",
+      "companyUrl": "https://croc.ru",
+      "period": "Январь 2020 - Октябрь 2021",
+      "description": "Поддерживал стратегию тестирования, проводил юзабилити-тестирование и прототипирование в Figma/Adobe XD. Тестировал BPM-системы (BPMSoft CRM) и DWH-хранилища (SSAS/MSSQL/PostgreSQL). Начал автоматизацию на PyTest: smoke и регрессионные автотесты."
+    },
+    {
+      "position": "Junior QA",
+      "company": "CROC",
+      "companyUrl": "https://croc.ru",
+      "period": "Сентябрь 2018 - Январь 2020",
+      "description": "Анализировал функциональные спецификации, проектировал тест-кейсы и тест-планы. Проводил функциональное, smoke, регрессионное и интеграционное тестирование web и мобильных приложений."
     }
   ],
   "education": [
@@ -122,14 +136,14 @@
   ],
   "certifications": [
     {
-      "name": "ISTQB Test Manager",
-      "issuer": "ISTQB",
-      "period": "2023"
-    },
-    {
-      "name": "ISTQB Certified Tester Foundation Level",
+      "name": "ISTQB Advanced Level Test Manager",
       "issuer": "ISTQB",
       "period": "2021"
+    },
+    {
+      "name": "ISTQB Foundation Level",
+      "issuer": "ISTQB",
+      "period": "2020"
     }
   ]
 }
