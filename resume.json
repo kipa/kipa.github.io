@@ -1,6 +1,6 @@
 {
   "meta": {
-    "pageTitle": "Кирилл Павлов - QA Lead",
+    "pageTitle": "Кирилл Павлов - Fullstack QA",
     "infoLevel": 1
   },
   "tooltips": {
@@ -41,12 +41,12 @@
   },
   "profile": {
     "name": "Кирилл Павлов",
-    "title": "QA Lead",
+    "title": "Fullstack QA",
     "photo": "./profile-photo.jpg",
     "photoThumbnail": "./profile-photo.jpg",
     "photoModal": "./profile-photo-expanded.jpg",
     "telegram": "https://kipavlo.t.me/",
-    "currentCompany": "Открыт для предложений",
+    "currentCompany": "Lamoda Tech",
     "currentCompanyUrl": "#"
   },
   "summary": "Fullstack QA Engineer с 7+ лет опыта в крупных enterprise-проектах. Строю фреймворки автоматизации с нуля (Python + PyTest + Playwright/Selenium), настраиваю CI/CD-пайплайны, провожу нагрузочное тестирование и управляю QA-командой. Активно внедряю AI-инструменты в процессы тестирования и совмещаю технический QA с UX-анализом и прототипированием в Figma. Сертифицирован по ISTQB Advanced Level (Test Manager).",
