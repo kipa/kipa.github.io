@@ -1,7 +1,7 @@
 {
   "meta": {
     "pageTitle": "Кирилл Павлов - Fullstack QA",
-    "infoLevel": 1
+    "infoLevel": 0
   },
   "tooltips": {
     "buttons": {
@@ -92,10 +92,17 @@
   ],
   "experience": [
     {
+      "position": "Fullstack QA / Auto QA",
+      "company": "Lamoda Tech",
+      "companyUrl": "#",
+      "period": "Сентябрь 2026 - настоящее время",
+      "description": "-"
+    },
+    {
       "position": "QA Lead",
       "company": "CROC",
       "companyUrl": "https://croc.ru",
-      "period": "Январь 2025 - настоящее время",
+      "period": "Январь 2025 - Июль 2026",
       "description": "Управляю QA-командой: найм, менторинг, развитие специалистов. Участвую в пресейлах и релиз-менеджменте, внедряю AI-инструменты в QA-процессы. Автоматизировал верификацию ответов RAG-системы через LLM-as-a-judge, сократив время ревью в 8 раз."
     },
     {
