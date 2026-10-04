@@ -74,6 +74,14 @@
         "ru": "Профиль на LinkedIn",
         "en": "LinkedIn profile"
       }
+    },
+    {
+      "label": "setka",
+      "href": "https://setka.ru/users/019d32e5-e02a-7e33-a8a4-b313516d9e8b",
+      "tooltip": {
+        "ru": "Профиль в Сетке",
+        "en": "Setka.ru profile"
+      }
     }
   ],
   "skills": [
